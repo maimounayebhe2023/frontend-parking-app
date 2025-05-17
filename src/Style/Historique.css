@@ -1,0 +1,35 @@
+.bg-custom {
+  background-color: #f1f5f9;
+}
+
+.min-height {
+  min-height: 100vh;
+}
+
+/* Ligne tableau sur fond clair */
+.ligne-enregistrement {
+  background-color: #e2e8f0;
+}
+
+/* Responsivité tablette Samsung (largeur ≤ 800px) */
+@media (max-width: 800px) {
+  .container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  /* Ajuster la table responsive */
+  .table-responsive {
+    font-size: 14px;
+  }
+
+  /* Boutons plus grands et espacé sur petit écran */
+  .d-flex.gap-2 {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .btn {
+    width: 100% !important;
+  }
+}
