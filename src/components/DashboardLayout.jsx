@@ -9,6 +9,7 @@ import {
   FaSearch,
   FaBars,
   FaTimes,
+  FaHome,
 } from "react-icons/fa";
 
 const DashboardLayout = () => {
@@ -36,6 +37,12 @@ const DashboardLayout = () => {
   }, []);
 
   const menuItems = [
+    {
+      path: "/",
+      icon: <FaHome />,
+      label: "Accueil",
+      tooltip: "Retour à la page d'accueil",
+    },
     {
       path: "/nouvelle-entree",
       icon: <FaSignInAlt />,
