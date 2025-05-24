@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   FaParking,
@@ -14,6 +14,26 @@ import {
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
+
+  // Effet pour gérer la fermeture automatique du sidebar sur les petits écrans
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    // Appliquer au chargement initial
+    handleResize();
+
+    // Ajouter l'écouteur d'événement
+    window.addEventListener("resize", handleResize);
+
+    // Nettoyer l'écouteur d'événement
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const menuItems = [
     {
