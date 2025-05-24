@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   FaCar,
@@ -12,38 +12,11 @@ import {
   FaSpinner,
   FaExclamationTriangle,
 } from "react-icons/fa";
+import { useStats } from "../hooks/useStats";
 import "../Style/Accueil.css";
 
 const Accueil = () => {
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    exited: 0,
-    occupation: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://localhost:8000/api/stats");
-      if (!response.ok)
-        throw new Error("Erreur lors du chargement des statistiques");
-      const data = await response.json();
-      setStats(data);
-      setError(null);
-    } catch (err) {
-      setError("Impossible de charger les statistiques");
-      console.error("Erreur:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: stats, isLoading, error, refetch } = useStats();
 
   const quickActions = [
     {
@@ -83,7 +56,7 @@ const Accueil = () => {
     },
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="loading-spinner">
         <FaSpinner className="spinner" />
@@ -96,8 +69,8 @@ const Accueil = () => {
     return (
       <div className="error-message">
         <FaExclamationTriangle />
-        <p>{error}</p>
-        <button onClick={fetchStats} className="retry-button">
+        <p>{error.message}</p>
+        <button onClick={() => refetch()} className="retry-button">
           Réessayer
         </button>
       </div>

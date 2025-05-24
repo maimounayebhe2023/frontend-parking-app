@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
-import axios from "axios";
+import { enregistrementService } from "../services/api";
 import "../Style/ValideSortie.css";
 
 const SortieForm = () => {
@@ -34,17 +34,11 @@ const SortieForm = () => {
     setSucces("");
 
     try {
-      const response = await axios.patch(
-        `http://localhost:8000/api/enregistrement/${codePin}`,
-        codePin
-      );
+      const response = await enregistrementService.validerSortie(codePin);
       setCodePin("");
-      setSucces(response.data.message);
+      setSucces(response.message);
     } catch (error) {
-      if (error.response) {
-        console.log(error.response.data);
-      }
-      setMessage(error.response?.data?.message || "Une erreur est survenue");
+      setMessage(error.message || "Une erreur est survenue");
     } finally {
       setLoading(false);
     }
