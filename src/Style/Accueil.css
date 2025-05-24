@@ -241,3 +241,40 @@
     font-size: 1.5rem;
   }
 }
+
+.error-banner {
+  grid-column: 1 / -1;
+  background-color: #fff3f3;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #d32f2f;
+}
+
+.error-banner svg {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.error-banner p {
+  margin: 0;
+  flex-grow: 1;
+}
+
+.error-banner .retry-button {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.error-banner .retry-button:hover {
+  background-color: #b71c1c;
+}

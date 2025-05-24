@@ -9,14 +9,26 @@ import {
   FaList,
   FaHistory,
   FaSearch,
-  FaSpinner,
   FaExclamationTriangle,
 } from "react-icons/fa";
-import { useStats } from "../hooks/useStats";
+import { useEnregistrementsStats } from "../hooks/useEnregistrements";
+import StatCardSkeleton from "../components/StatCardSkeleton";
 import "../Style/Accueil.css";
 
+const StatCard = ({ icon: Icon, title, value, className }) => (
+  <div className="stat-card">
+    <div className={`stat-icon ${className}`}>
+      <Icon />
+    </div>
+    <div className="stat-info">
+      <h3>{title}</h3>
+      <p className="stat-value">{value ?? <StatCardSkeleton />}</p>
+    </div>
+  </div>
+);
+
 const Accueil = () => {
-  const { data: stats, isLoading, error, refetch } = useStats();
+  const { data: stats, isLoading, error, refetch } = useEnregistrementsStats();
 
   const quickActions = [
     {
@@ -56,27 +68,6 @@ const Accueil = () => {
     },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="loading-spinner">
-        <FaSpinner className="spinner" />
-        <p>Chargement des statistiques...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="error-message">
-        <FaExclamationTriangle />
-        <p>{error.message}</p>
-        <button onClick={() => refetch()} className="retry-button">
-          Réessayer
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="dashboard-content">
       <section className="welcome-section">
@@ -85,45 +76,49 @@ const Accueil = () => {
       </section>
 
       <section className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon total">
-            <FaParking />
+        {isLoading ? (
+          // Afficher 4 skeletons pendant le chargement
+          Array(4)
+            .fill(null)
+            .map((_, index) => <StatCardSkeleton key={index} />)
+        ) : error ? (
+          // Afficher un message d'erreur non-bloquant
+          <div className="error-banner">
+            <FaExclamationTriangle />
+            <p>{error.message}</p>
+            <button onClick={() => refetch()} className="retry-button">
+              Réessayer
+            </button>
           </div>
-          <div className="stat-info">
-            <h3>Total Véhicules</h3>
-            <p className="stat-value">{stats.total}</p>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon active">
-            <FaCar />
-          </div>
-          <div className="stat-info">
-            <h3>Véhicules Actifs</h3>
-            <p className="stat-value">{stats.active}</p>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon exited">
-            <FaMotorcycle />
-          </div>
-          <div className="stat-info">
-            <h3>Véhicules Sortis</h3>
-            <p className="stat-value">{stats.exited}</p>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon occupation">
-            <FaParking />
-          </div>
-          <div className="stat-info">
-            <h3>Taux d'Occupation</h3>
-            <p className="stat-value">{stats.occupation}%</p>
-          </div>
-        </div>
+        ) : (
+          // Afficher les statistiques
+          <>
+            <StatCard
+              icon={FaParking}
+              title="Total Véhicules"
+              value={stats?.total}
+              className="total"
+            />
+            <StatCard
+              icon={FaCar}
+              title="Véhicules Actifs"
+              value={stats?.active}
+              className="active"
+            />
+            <StatCard
+              icon={FaMotorcycle}
+              title="Véhicules Sortis"
+              value={stats?.exited}
+              className="exited"
+            />
+            <StatCard
+              icon={FaParking}
+              title="Taux d'Occupation"
+              value={stats?.occupation ? `${stats.occupation}%` : null}
+              className="occupation"
+            />
+          </>
+        )}
       </section>
 
       <section className="quick-actions-section">
