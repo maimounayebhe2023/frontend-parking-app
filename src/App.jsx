@@ -9,6 +9,9 @@ import EnregistrementsParDate from "./Pages/Historique";
 import CodePinSearch from "./Pages/Recherche";
 import AfficherEnregistrement from "./Pages/details";
 import DashboardLayout from "./components/DashboardLayout";
+import Accueil from "./Pages/Accueil";
+import NotFound from "./Pages/NotFound";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import "./App.css";
 import "./Style/Dashboard.css";
@@ -17,17 +20,20 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<DashboardLayout />}>
-        <Route index element={<Navigate to="/Liste" replace />} />
-        <Route path="form" element={<FormAjou />} />
-        <Route path="ValideSortie" element={<SortieForm />} />
-        <Route path="Liste" element={<EnregistrementsList />} />
-        <Route path="His" element={<EnregistrementsParDate />} />
-        <Route path="Details" element={<AfficherEnregistrement />} />
-        <Route path="Recherche" element={<CodePinSearch />} />
-      </Route>
-    </Routes>
+    <ErrorBoundary>
+      <Routes>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route index element={<Accueil />} />
+          <Route path="validation-sortie" element={<SortieForm />} />
+          <Route path="nouvelle-entree" element={<FormAjou />} />
+          <Route path="liste-actuelle" element={<EnregistrementsList />} />
+          <Route path="historique" element={<EnregistrementsParDate />} />
+          <Route path="recherche" element={<CodePinSearch />} />
+          <Route path="details/:id" element={<AfficherEnregistrement />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
   );
 }
 

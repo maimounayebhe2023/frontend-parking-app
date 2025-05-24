@@ -37,31 +37,31 @@ const DashboardLayout = () => {
 
   const menuItems = [
     {
-      path: "/form",
+      path: "/nouvelle-entree",
       icon: <FaSignInAlt />,
       label: "Nouvelle Entrée",
       tooltip: "Enregistrer une nouvelle entrée",
     },
     {
-      path: "/ValideSortie",
+      path: "/validation-sortie",
       icon: <FaSignOutAlt />,
       label: "Validation Sortie",
       tooltip: "Valider une sortie de véhicule",
     },
     {
-      path: "/Liste",
+      path: "/liste-actuelle",
       icon: <FaList />,
       label: "Liste Actuelle",
       tooltip: "Voir les véhicules en stationnement",
     },
     {
-      path: "/His",
+      path: "/historique",
       icon: <FaHistory />,
       label: "Historique",
       tooltip: "Consulter l'historique des entrées/sorties",
     },
     {
-      path: "/Recherche",
+      path: "/recherche",
       icon: <FaSearch />,
       label: "Recherche",
       tooltip: "Rechercher un véhicule",
@@ -76,7 +76,7 @@ const DashboardLayout = () => {
       <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="sidebar-header">
           <FaParking className="logo-icon" />
-          <h2>Gestion du Parking</h2>
+          <h2>Parking UNC</h2>
           <button
             className="toggle-btn"
             onClick={() => setSidebarOpen(!sidebarOpen)}
