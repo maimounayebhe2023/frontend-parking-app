@@ -1,61 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { FaSearch, FaEye, FaTrash, FaDatabase } from "react-icons/fa";
+import { useEnregistrementsList } from "../hooks/useEnregistrements";
 import "../Style/common.css";
 import "../Style/Recherche.css";
 
 const CodePinSearch = () => {
   const [recherche, setRecherche] = useState("");
-  const [donnees, setDonnees] = useState([]);
-  const [erreur, setErreur] = useState("");
   const [pageActuelle, setPageActuelle] = useState(1);
-  const [loading, setLoading] = useState(false);
   const elementsParPage = 5;
 
-  useEffect(() => {
-    fetchEnregistrements();
-  }, []);
+  const {
+    data: enregistrements = [],
+    isLoading,
+    error,
+    refetch,
+  } = useEnregistrementsList();
 
-  const fetchEnregistrements = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/enregistrements");
-      if (!response.ok) {
-        throw new Error("Erreur lors du chargement des données");
-      }
-      const data = await response.json();
-      setDonnees(data);
-      setErreur("");
-    } catch (error) {
-      setErreur("Erreur lors du chargement des données.");
-      console.error("Erreur:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Filtrage des données en fonction de la recherche
+  const donneesFiltrees = useMemo(() => {
+    if (!recherche.trim()) return enregistrements;
 
-  const rechercher = async () => {
-    if (recherche.trim() === "") return;
-    const valeur = recherche.trim();
-
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `/api/enregistrements/recherche?q=${encodeURIComponent(valeur)}`
+    const termeRecherche = recherche.toLowerCase().trim();
+    return enregistrements.filter((item) => {
+      return (
+        item.nom_conducteur?.toLowerCase().includes(termeRecherche) ||
+        item.prenom_conducteur?.toLowerCase().includes(termeRecherche) ||
+        item.plaque_immatricu?.toLowerCase().includes(termeRecherche) ||
+        item.code_pin?.toLowerCase().includes(termeRecherche) ||
+        new Date(item.date_enregistrement)
+          .toLocaleString()
+          .toLowerCase()
+          .includes(termeRecherche)
       );
-      if (!response.ok) {
-        throw new Error("Erreur lors de la recherche");
-      }
-      const data = await response.json();
-      setDonnees(data);
-      setErreur(data.length === 0 ? "Aucun enregistrement trouvé." : "");
-      setPageActuelle(1);
-    } catch (error) {
-      setErreur("Erreur lors de la recherche.");
-      console.error("Erreur:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [enregistrements, recherche]);
 
   const handleDelete = async (id) => {
     if (
@@ -65,7 +43,6 @@ const CodePinSearch = () => {
     }
 
     try {
-      setLoading(true);
       const response = await fetch(`/api/enregistrements/${id}`, {
         method: "DELETE",
       });
@@ -74,19 +51,22 @@ const CodePinSearch = () => {
         throw new Error("Erreur lors de la suppression");
       }
 
-      await fetchEnregistrements();
+      await refetch();
     } catch (error) {
-      setErreur("Erreur lors de la suppression.");
       console.error("Erreur:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Calcul de la pagination
   const indexDernier = pageActuelle * elementsParPage;
   const indexPremier = indexDernier - elementsParPage;
-  const donneesPage = donnees.slice(indexPremier, indexDernier);
-  const pagesTotal = Math.ceil(donnees.length / elementsParPage);
+  const donneesPage = donneesFiltrees.slice(indexPremier, indexDernier);
+  const pagesTotal = Math.ceil(donneesFiltrees.length / elementsParPage);
+
+  // Réinitialiser la page quand la recherche change
+  useEffect(() => {
+    setPageActuelle(1);
+  }, [recherche]);
 
   return (
     <div className="dashboard-content">
@@ -104,7 +84,6 @@ const CodePinSearch = () => {
             className="filter-form"
             onSubmit={(e) => {
               e.preventDefault();
-              rechercher();
             }}
           >
             <div className="filter-group">
@@ -121,23 +100,30 @@ const CodePinSearch = () => {
                 value={recherche}
                 onChange={(e) => setRecherche(e.target.value)}
                 placeholder="Entrez votre recherche..."
-                disabled={loading}
+                disabled={isLoading}
               />
             </div>
 
             <button
               type="submit"
               className="search-btn"
-              disabled={loading || !recherche.trim()}
+              disabled={isLoading || !recherche.trim()}
             >
               <FaSearch />
-              {loading ? "Recherche..." : "Rechercher"}
+              {isLoading ? "Chargement..." : "Rechercher"}
             </button>
           </form>
 
-          {erreur && (
+          {error && (
             <div className="alert alert-info mt-3" role="alert">
-              {erreur}
+              {error.message ||
+                "Une erreur est survenue lors du chargement des données"}
+            </div>
+          )}
+
+          {!error && recherche.trim() && donneesFiltrees.length === 0 && (
+            <div className="alert alert-info mt-3" role="alert">
+              Aucun enregistrement trouvé pour cette recherche.
             </div>
           )}
         </div>
@@ -148,25 +134,24 @@ const CodePinSearch = () => {
         <div className="results-container">
           <div className="results-header">
             <h3 className="results-title">Résultats de la recherche</h3>
-            {donnees.length > 0 && (
+            {donneesFiltrees.length > 0 && (
               <span className="results-count">
                 <FaDatabase />
                 <span>
-                  {donnees.length} enregistrement{donnees.length > 1 ? "s" : ""}
+                  {donneesFiltrees.length} enregistrement
+                  {donneesFiltrees.length > 1 ? "s" : ""}
                 </span>
               </span>
             )}
           </div>
 
-          {loading && (
+          {isLoading ? (
             <div className="text-center py-4">
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Chargement...</span>
               </div>
             </div>
-          )}
-
-          {!loading && (
+          ) : (
             <div className="table-responsive">
               <table className="table">
                 <thead>
@@ -184,7 +169,7 @@ const CodePinSearch = () => {
                   {donneesPage.map((donnee) => (
                     <tr key={donnee.id}>
                       <td>{donnee.id}</td>
-                      <td>{`${donnee.nom} ${donnee.prenom}`}</td>
+                      <td>{`${donnee.nom_conducteur} ${donnee.prenom_conducteur}`}</td>
                       <td>{donnee.plaque_immatricu}</td>
                       <td>
                         <span
@@ -197,18 +182,16 @@ const CodePinSearch = () => {
                           {donnee.type_engin}
                         </span>
                       </td>
-                      <td>{new Date(donnee.date_entree).toLocaleString()}</td>
+                      <td>
+                        {new Date(donnee.date_enregistrement).toLocaleString()}
+                      </td>
                       <td>
                         <span
                           className={`badge ${
-                            donnee.statut === "entree"
-                              ? "bg-success"
-                              : "bg-danger"
+                            !donnee.date_sortie ? "bg-success" : "bg-danger"
                           }`}
                         >
-                          {donnee.statut === "entree"
-                            ? "En stationnement"
-                            : "Sorti"}
+                          {!donnee.date_sortie ? "En stationnement" : "Sorti"}
                         </span>
                       </td>
                       <td>
@@ -216,7 +199,7 @@ const CodePinSearch = () => {
                           <button
                             className="btn btn-sm btn-outline-primary"
                             title="Voir détails"
-                            disabled={loading}
+                            disabled={isLoading}
                           >
                             <FaEye />
                           </button>
@@ -224,7 +207,7 @@ const CodePinSearch = () => {
                             className="btn btn-sm btn-outline-danger"
                             title="Supprimer"
                             onClick={() => handleDelete(donnee.id)}
-                            disabled={loading}
+                            disabled={isLoading}
                           >
                             <FaTrash />
                           </button>
@@ -232,7 +215,7 @@ const CodePinSearch = () => {
                       </td>
                     </tr>
                   ))}
-                  {!loading && donnees.length === 0 && (
+                  {!isLoading && donneesFiltrees.length === 0 && (
                     <tr>
                       <td colSpan="7" className="text-center py-4">
                         Aucun enregistrement trouvé
@@ -245,12 +228,12 @@ const CodePinSearch = () => {
           )}
 
           {/* Pagination */}
-          {!loading && pagesTotal > 1 && (
+          {!isLoading && pagesTotal > 1 && (
             <div className="pagination-container">
               <button
                 className="btn btn-outline-primary"
                 onClick={() => setPageActuelle((p) => Math.max(1, p - 1))}
-                disabled={pageActuelle === 1 || loading}
+                disabled={pageActuelle === 1 || isLoading}
               >
                 Précédent
               </button>
@@ -262,7 +245,7 @@ const CodePinSearch = () => {
                 onClick={() =>
                   setPageActuelle((p) => Math.min(pagesTotal, p + 1))
                 }
-                disabled={pageActuelle === pagesTotal || loading}
+                disabled={pageActuelle === pagesTotal || isLoading}
               >
                 Suivant
               </button>

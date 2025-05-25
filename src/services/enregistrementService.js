@@ -1,4 +1,6 @@
 import api from "./api";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 // Service pour les enregistrements
 const enregistrementService = {
@@ -24,6 +26,66 @@ const enregistrementService = {
   getStatistiques: async () => {
     const response = await api.get("/enregistrement/statistiques");
     return response.data;
+  },
+
+  /**
+   * Exporte les enregistrements au format Excel côté client
+   * @param {Array} enregistrements - Liste des enregistrements à exporter
+   * @returns {Promise<void>}
+   */
+  exportToExcel: async (enregistrements) => {
+    // Préparer les données pour l'export
+    const dataToExport = enregistrements.map((item) => ({
+      Plaque: item.plaque_immatricu,
+      "Type d'engin": item.type_engin,
+      "Date d'entrée": new Date(item.date_enregistrement).toLocaleString(),
+      "Date de sortie": new Date(item.date_sortie).toLocaleString(),
+      Durée: this.calculateDuration(item.date_enregistrement, item.date_sortie),
+      Catégorie: item.categorie_nom,
+      Nom: item.nom_conducteur,
+      Prénom: item.prenom_conducteur,
+      Téléphone: item.tel,
+    }));
+
+    // Créer un nouveau classeur
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Historique");
+
+    // Générer le fichier Excel
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+
+    // Télécharger le fichier
+    const fileName = this.generateFileName();
+    saveAs(blob, fileName);
+  },
+
+  /**
+   * Calcule la durée de stationnement
+   * @param {string} dateEntree - Date d'entrée
+   * @param {string} dateSortie - Date de sortie
+   * @returns {string} - Durée formatée
+   */
+  calculateDuration: (dateEntree, dateSortie) => {
+    const entree = new Date(dateEntree);
+    const sortie = new Date(dateSortie);
+    const duree = Math.round((sortie - entree) / (1000 * 60));
+    return duree < 60
+      ? `${duree} min`
+      : `${Math.floor(duree / 60)}h${duree % 60}min`;
+  },
+
+  /**
+   * Génère le nom du fichier d'export avec la date du jour
+   * @returns {string} - Nom du fichier
+   */
+  generateFileName: () => {
+    const date = new Date().toISOString().split("T")[0];
+    return `historique_${date}.xlsx`;
   },
 };
 

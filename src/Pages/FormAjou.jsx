@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaUser, FaPhone, FaCar, FaIdCard, FaSave } from "react-icons/fa";
+import { useAddEnregistrement } from "../hooks/useEnregistrements";
 import "../Style/common.css";
 import "../Style/FormAjou.css";
 
@@ -14,9 +15,10 @@ const AjoutForm = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const addEnregistrement = useAddEnregistrement();
 
   const validate = () => {
     const newErrors = {};
@@ -67,26 +69,11 @@ const AjoutForm = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    setLoading(true);
     setSuccessMessage("");
     setErrorMessage("");
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/enregistrement/ajouter",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de l'ajout");
-      }
-
+      await addEnregistrement.mutateAsync(formData);
       setSuccessMessage("Enregistrement ajouté avec succès");
       setFormData({
         nom: "",
@@ -96,11 +83,11 @@ const AjoutForm = () => {
         plaque_immatricu: "",
         type_engin: "Voiture",
       });
+      setErrors({});
     } catch (error) {
-      setErrorMessage("Erreur lors de l'ajout de l'enregistrement");
-      console.error("Erreur:", error);
-    } finally {
-      setLoading(false);
+      setErrorMessage(
+        error.message || "Erreur lors de l'ajout de l'enregistrement"
+      );
     }
   };
 
@@ -141,7 +128,7 @@ const AjoutForm = () => {
                   placeholder="Entrez le nom"
                   value={formData.nom}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={addEnregistrement.isPending}
                 />
                 {errors.nom && (
                   <div className="invalid-feedback">{errors.nom}</div>
@@ -164,7 +151,7 @@ const AjoutForm = () => {
                   placeholder="Entrez le prénom"
                   value={formData.prenom}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={addEnregistrement.isPending}
                 />
                 {errors.prenom && (
                   <div className="invalid-feedback">{errors.prenom}</div>
@@ -185,7 +172,7 @@ const AjoutForm = () => {
                   placeholder="Ex: 611789655"
                   value={formData.tel}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={addEnregistrement.isPending}
                 />
                 {errors.tel && (
                   <div className="invalid-feedback">{errors.tel}</div>
@@ -206,7 +193,7 @@ const AjoutForm = () => {
                   }`}
                   value={formData.categorie_nom}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={addEnregistrement.isPending}
                 >
                   <option value="personnel">Personnel</option>
                   <option value="etudiant">Étudiant</option>
@@ -233,7 +220,7 @@ const AjoutForm = () => {
                   }`}
                   value={formData.type_engin}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={addEnregistrement.isPending}
                 >
                   <option value="Voiture">Voiture</option>
                   <option value="Moto">Moto</option>
@@ -259,7 +246,7 @@ const AjoutForm = () => {
                   placeholder="Ex: AB-123-CD"
                   value={formData.plaque_immatricu}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={addEnregistrement.isPending}
                 />
                 {errors.plaque_immatricu && (
                   <div className="invalid-feedback">
@@ -270,8 +257,12 @@ const AjoutForm = () => {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="submit-btn" disabled={loading}>
-                {loading ? (
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={addEnregistrement.isPending}
+              >
+                {addEnregistrement.isPending ? (
                   <>
                     <span
                       className="spinner-border spinner-border-sm me-2"

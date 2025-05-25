@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { enregistrementService } from "../services/api";
+import { useValiderSortie } from "../hooks/useEnregistrements";
 import "../Style/ValideSortie.css";
 
 const SortieForm = () => {
@@ -8,7 +8,8 @@ const SortieForm = () => {
   const [codePin, setCodePin] = useState("");
   const [message, setMessage] = useState("");
   const [succes, setSucces] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const validerSortie = useValiderSortie();
 
   const validate = () => {
     if (!codePin.trim()) {
@@ -29,18 +30,15 @@ const SortieForm = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    setLoading(true);
     setMessage("");
     setSucces("");
 
     try {
-      const response = await enregistrementService.validerSortie(codePin);
+      const response = await validerSortie.mutateAsync(codePin);
       setCodePin("");
       setSucces(response.message);
     } catch (error) {
       setMessage(error.message || "Une erreur est survenue");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -69,7 +67,7 @@ const SortieForm = () => {
                 value={codePin}
                 onChange={handleChange}
                 placeholder="Saisissez le code PIN"
-                disabled={loading}
+                disabled={validerSortie.isPending}
               />
               {errors && <p className="sortie-text-danger">{errors}</p>}
             </div>
@@ -78,9 +76,9 @@ const SortieForm = () => {
               <button
                 type="submit"
                 className="sortie-submit-button"
-                disabled={loading}
+                disabled={validerSortie.isPending}
               >
-                {loading ? (
+                {validerSortie.isPending ? (
                   <>
                     <span
                       className="spinner-border spinner-border-sm me-2"

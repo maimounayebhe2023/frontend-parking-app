@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaCalendarAlt,
   FaSearch,
@@ -6,44 +6,37 @@ import {
   FaDatabase,
   FaFileDownload,
   FaFileCsv,
-  FaFilePdf,
 } from "react-icons/fa";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import { useEnregistrementsList } from "../hooks/useEnregistrements";
+import { useExportEnregistrements } from "../hooks/useExport";
 import "../Style/Historique.css";
-
-// Mock temporaire
-const mockEnregistrements = [
-  {
-    id: 1,
-    date_enregistrement: "2024-03-20 08:30:00",
-    date_sortie: "2024-03-20 10:15:00",
-    nom_conducteur: "Dupont",
-    prenom_conducteur: "Jean",
-    plaque_immatricu: "AB-123-CD",
-    type_engin: "Voiture",
-  },
-  {
-    id: 2,
-    date_enregistrement: "2024-03-20 09:45:00",
-    date_sortie: null,
-    nom_conducteur: "Martin",
-    prenom_conducteur: "Sophie",
-    plaque_immatricu: "EF-456-GH",
-    type_engin: "Moto",
-  },
-  // Ajoutez plus d'enregistrements mock si nécessaire
-];
 
 function EnregistrementsParDate() {
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
-  const [enregistrements, setEnregistrements] = useState([]);
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [exportMenuRef] = useState(React.createRef());
   const [exportMessage, setExportMessage] = useState("");
+
+  const {
+    data: enregistrements = [],
+    isLoading,
+    error,
+  } = useEnregistrementsList();
+  const { exportEnregistrements, isExporting, exportError } =
+    useExportEnregistrements();
+
+  // Filtrer les enregistrements par date
+  const enregistrementsFiltres = React.useMemo(() => {
+    if (!dateDebut || !dateFin) return [];
+
+    return enregistrements.filter((item) => {
+      const date = new Date(item.date_enregistrement);
+      return (
+        date >= new Date(dateDebut) && date <= new Date(dateFin + "T23:59:59")
+      );
+    });
+  }, [enregistrements, dateDebut, dateFin]);
 
   // Gestion du clic en dehors du menu d'export
   useEffect(() => {
@@ -60,45 +53,8 @@ function EnregistrementsParDate() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchEnregistrements = async () => {
-    if (!dateDebut || !dateFin) {
-      setMessage("Veuillez sélectionner une date de début et une date de fin.");
-      setEnregistrements([]);
-      return;
-    }
-    if (dateFin < dateDebut) {
-      setMessage(
-        "La date de fin doit être postérieure ou égale à la date de début."
-      );
-      setEnregistrements([]);
-      return;
-    }
-
-    setLoading(true);
-    setMessage("");
-
-    // Simulation d'appel API avec le mock
-    setTimeout(() => {
-      const filteredData = mockEnregistrements.filter((item) => {
-        const date = new Date(item.date_enregistrement);
-        return (
-          date >= new Date(dateDebut) && date <= new Date(dateFin + "T23:59:59")
-        );
-      });
-
-      if (filteredData.length === 0) {
-        setMessage("Aucun enregistrement trouvé pour cette période.");
-        setEnregistrements([]);
-      } else {
-        setEnregistrements(filteredData);
-        setMessage("");
-      }
-      setLoading(false);
-    }, 1000);
-  };
-
   const handleExportClick = () => {
-    if (enregistrements.length === 0) {
+    if (enregistrementsFiltres.length === 0) {
       setExportMessage("Aucune donnée à exporter");
       setTimeout(() => setExportMessage(""), 3000);
       return;
@@ -106,36 +62,31 @@ function EnregistrementsParDate() {
     setShowExportMenu(!showExportMenu);
   };
 
-  const exportToExcel = () => {
-    if (enregistrements.length === 0) {
-      setExportMessage("Aucune donnée à exporter");
+  const handleExport = async (format) => {
+    try {
+      if (format === "excel") {
+        await exportEnregistrements(enregistrementsFiltres);
+      } else if (format === "csv") {
+        // Utiliser le même hook mais avec un format différent
+        await exportEnregistrements(enregistrementsFiltres, "csv");
+      }
+      setShowExportMenu(false);
+    } catch (error) {
+      setExportMessage(error.message || "Erreur lors de l'exportation");
       setTimeout(() => setExportMessage(""), 3000);
-      return;
     }
-    const worksheet = XLSX.utils.json_to_sheet(enregistrements);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Enregistrements");
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "historique_enregistrements.xlsx");
-    setShowExportMenu(false);
   };
 
-  const exportToCSV = () => {
-    if (enregistrements.length === 0) {
-      setExportMessage("Aucune donnée à exporter");
-      setTimeout(() => setExportMessage(""), 3000);
-      return;
-    }
-    const worksheet = XLSX.utils.json_to_sheet(enregistrements);
-    const csv = XLSX.utils.sheet_to_csv(worksheet);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    saveAs(blob, "historique_enregistrements.csv");
-    setShowExportMenu(false);
+  const getMessage = () => {
+    if (error) return "Erreur lors du chargement des données";
+    if (exportError) return exportError.message;
+    if (!dateDebut || !dateFin)
+      return "Veuillez sélectionner une date de début et une date de fin.";
+    if (dateFin < dateDebut)
+      return "La date de fin doit être postérieure ou égale à la date de début.";
+    if (enregistrementsFiltres.length === 0 && dateDebut && dateFin)
+      return "Aucun enregistrement trouvé pour cette période.";
+    return "";
   };
 
   return (
@@ -151,17 +102,17 @@ function EnregistrementsParDate() {
                   <button
                     className="export-btn"
                     onClick={handleExportClick}
-                    disabled={loading}
+                    disabled={isLoading || isExporting}
                   >
                     <FaFileDownload />
-                    Exporter
+                    {isExporting ? "Exportation..." : "Exporter"}
                   </button>
                   {showExportMenu && (
                     <div className="export-menu">
-                      <button onClick={exportToExcel}>
+                      <button onClick={() => handleExport("excel")}>
                         <FaFileExcel /> Excel
                       </button>
-                      <button onClick={exportToCSV}>
+                      <button onClick={() => handleExport("csv")}>
                         <FaFileCsv /> CSV
                       </button>
                     </div>
@@ -176,7 +127,6 @@ function EnregistrementsParDate() {
             className="filter-form"
             onSubmit={(e) => {
               e.preventDefault();
-              fetchEnregistrements();
             }}
           >
             <div className="filter-group">
@@ -189,7 +139,7 @@ function EnregistrementsParDate() {
                 type="date"
                 value={dateDebut}
                 onChange={(e) => setDateDebut(e.target.value)}
-                disabled={loading}
+                disabled={isLoading}
                 required
                 max={dateFin || undefined}
               />
@@ -205,7 +155,7 @@ function EnregistrementsParDate() {
                 type="date"
                 value={dateFin}
                 onChange={(e) => setDateFin(e.target.value)}
-                disabled={loading}
+                disabled={isLoading}
                 required
                 min={dateDebut || undefined}
               />
@@ -215,23 +165,22 @@ function EnregistrementsParDate() {
               <button
                 type="submit"
                 className="search-btn"
-                disabled={loading || !dateDebut || !dateFin}
+                disabled={isLoading || !dateDebut || !dateFin}
               >
                 <FaSearch />
-                {loading ? "Recherche..." : "Rechercher"}
+                {isLoading ? "Chargement..." : "Rechercher"}
               </button>
             </div>
           </form>
 
-          {message && (
-            <div className="alert alert-info mt-3" role="alert">
-              {message}
-            </div>
-          )}
-
-          {exportMessage && (
-            <div className="alert alert-warning mt-3" role="alert">
-              {exportMessage}
+          {(getMessage() || exportMessage) && (
+            <div
+              className={`alert ${
+                exportMessage ? "alert-warning" : "alert-info"
+              } mt-3`}
+              role="alert"
+            >
+              {exportMessage || getMessage()}
             </div>
           )}
         </div>
@@ -242,26 +191,24 @@ function EnregistrementsParDate() {
         <div className="results-container">
           <div className="results-header">
             <h3 className="results-title">Résultats de la recherche</h3>
-            {enregistrements.length > 0 && (
+            {enregistrementsFiltres.length > 0 && (
               <span className="results-count">
                 <FaDatabase />
                 <span>
-                  {enregistrements.length} enregistrement
-                  {enregistrements.length > 1 ? "s" : ""}
+                  {enregistrementsFiltres.length} enregistrement
+                  {enregistrementsFiltres.length > 1 ? "s" : ""}
                 </span>
               </span>
             )}
           </div>
 
-          {loading && (
+          {isLoading ? (
             <div className="text-center py-4">
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Chargement...</span>
               </div>
             </div>
-          )}
-
-          {!loading && (
+          ) : (
             <div className="table-responsive">
               <table className="table">
                 <thead>
@@ -275,45 +222,43 @@ function EnregistrementsParDate() {
                   </tr>
                 </thead>
                 <tbody>
-                  {enregistrements.length > 0
-                    ? enregistrements.map((item) => (
-                        <tr key={item.id}>
-                          <td>
-                            {new Date(
-                              item.date_enregistrement
-                            ).toLocaleString()}
-                          </td>
-                          <td>
-                            {item.date_sortie
-                              ? new Date(item.date_sortie).toLocaleString()
-                              : "-"}
-                          </td>
-                          <td>{item.nom_conducteur}</td>
-                          <td>{item.prenom_conducteur}</td>
-                          <td>{item.plaque_immatricu || "-"}</td>
-                          <td>
-                            <span
-                              className={`badge ${
-                                item.type_engin === "Voiture"
-                                  ? "bg-primary"
-                                  : "bg-info"
-                              }`}
-                            >
-                              {item.type_engin || "-"}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
-                    : !message && (
-                        <tr>
-                          <td
-                            colSpan="6"
-                            className="text-center text-secondary py-4"
+                  {enregistrementsFiltres.length > 0 ? (
+                    enregistrementsFiltres.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          {new Date(item.date_enregistrement).toLocaleString()}
+                        </td>
+                        <td>
+                          {item.date_sortie
+                            ? new Date(item.date_sortie).toLocaleString()
+                            : "-"}
+                        </td>
+                        <td>{item.nom_conducteur}</td>
+                        <td>{item.prenom_conducteur}</td>
+                        <td>{item.plaque_immatricu || "-"}</td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              item.type_engin === "Voiture"
+                                ? "bg-primary"
+                                : "bg-info"
+                            }`}
                           >
-                            Aucun enregistrement à afficher
-                          </td>
-                        </tr>
-                      )}
+                            {item.type_engin || "-"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="6"
+                        className="text-center text-secondary py-4"
+                      >
+                        Aucun enregistrement à afficher
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

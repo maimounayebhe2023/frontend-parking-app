@@ -7,22 +7,24 @@ import {
   FaEye,
   FaTrash,
 } from "react-icons/fa";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import { useEnregistrementsList } from "../hooks/useEnregistrements";
+import { useExportEnregistrements } from "../hooks/useExport";
 import "../Style/common.css";
 import "../Style/Liste.css";
 
 const EnregistrementsList = () => {
-  const [enregistrements, setEnregistrements] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [erreur, setErreur] = useState(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [exportMenuRef] = useState(React.createRef());
   const [exportMessage, setExportMessage] = useState("");
 
-  useEffect(() => {
-    fetchEnregistrements();
-  }, []);
+  const {
+    data: enregistrements = [],
+    isLoading,
+    error,
+    refetch,
+  } = useEnregistrementsList();
+  const { exportEnregistrements, isExporting, exportError } =
+    useExportEnregistrements();
 
   // Gestion du clic en dehors du menu d'export
   useEffect(() => {
@@ -39,24 +41,6 @@ const EnregistrementsList = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchEnregistrements = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://localhost:8000/api/index");
-      if (!response.ok) {
-        throw new Error("Erreur lors du chargement des données");
-      }
-      const data = await response.json();
-      setEnregistrements(data);
-      setErreur(null);
-    } catch (err) {
-      setErreur("Erreur lors du chargement des enregistrements");
-      console.error("Erreur:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleExportClick = () => {
     if (enregistrements.length === 0) {
       setExportMessage("Aucune donnée à exporter");
@@ -66,35 +50,18 @@ const EnregistrementsList = () => {
     setShowExportMenu(!showExportMenu);
   };
 
-  const exportToExcel = () => {
-    if (enregistrements.length === 0) {
-      setExportMessage("Aucune donnée à exporter");
+  const handleExport = async (format) => {
+    try {
+      if (format === "excel") {
+        await exportEnregistrements(enregistrements);
+      } else if (format === "csv") {
+        await exportEnregistrements(enregistrements, "csv");
+      }
+      setShowExportMenu(false);
+    } catch (error) {
+      setExportMessage(error.message || "Erreur lors de l'exportation");
       setTimeout(() => setExportMessage(""), 3000);
-      return;
     }
-    const worksheet = XLSX.utils.json_to_sheet(enregistrements);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Enregistrements");
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "liste_enregistrements.xlsx");
-    setShowExportMenu(false);
-  };
-
-  const exportToCSV = () => {
-    if (enregistrements.length === 0) {
-      setExportMessage("Aucune donnée à exporter");
-      setTimeout(() => setExportMessage(""), 3000);
-      return;
-    }
-    const worksheet = XLSX.utils.json_to_sheet(enregistrements);
-    const csv = XLSX.utils.sheet_to_csv(worksheet);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    saveAs(blob, "liste_enregistrements.csv");
-    setShowExportMenu(false);
   };
 
   const handleDelete = async (id) => {
@@ -105,7 +72,6 @@ const EnregistrementsList = () => {
     }
 
     try {
-      setLoading(true);
       const response = await fetch(
         `http://localhost:8000/api/enregistrements/${id}`,
         {
@@ -117,12 +83,11 @@ const EnregistrementsList = () => {
         throw new Error("Erreur lors de la suppression");
       }
 
-      await fetchEnregistrements();
+      await refetch();
     } catch (err) {
-      setErreur("Erreur lors de la suppression");
       console.error("Erreur:", err);
-    } finally {
-      setLoading(false);
+      setExportMessage("Erreur lors de la suppression");
+      setTimeout(() => setExportMessage(""), 3000);
     }
   };
 
@@ -148,17 +113,17 @@ const EnregistrementsList = () => {
               <button
                 className="export-btn"
                 onClick={handleExportClick}
-                disabled={loading}
+                disabled={isLoading || isExporting}
               >
                 <FaFileDownload />
-                Exporter
+                {isExporting ? "Exportation..." : "Exporter"}
               </button>
               {showExportMenu && (
                 <div className="export-menu">
-                  <button onClick={exportToExcel}>
+                  <button onClick={() => handleExport("excel")}>
                     <FaFileExcel /> Excel
                   </button>
-                  <button onClick={exportToCSV}>
+                  <button onClick={() => handleExport("csv")}>
                     <FaFileCsv /> CSV
                   </button>
                 </div>
@@ -166,19 +131,21 @@ const EnregistrementsList = () => {
             </div>
           </div>
 
-          {exportMessage && (
-            <div className="alert alert-warning mt-3" role="alert">
-              {exportMessage}
+          {(exportMessage || error || exportError) && (
+            <div
+              className={`alert ${
+                exportMessage || exportError ? "alert-warning" : "alert-danger"
+              } mt-3`}
+              role="alert"
+            >
+              {exportMessage ||
+                exportError?.message ||
+                error?.message ||
+                "Une erreur est survenue"}
             </div>
           )}
 
-          {erreur && (
-            <div className="alert alert-danger mt-3" role="alert">
-              {erreur}
-            </div>
-          )}
-
-          {loading ? (
+          {isLoading ? (
             <div className="text-center py-4">
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Chargement...</span>
@@ -238,7 +205,7 @@ const EnregistrementsList = () => {
                           <button
                             className="btn btn-sm btn-outline-primary"
                             title="Voir détails"
-                            disabled={loading}
+                            disabled={isLoading}
                           >
                             <FaEye />
                           </button>
@@ -246,7 +213,7 @@ const EnregistrementsList = () => {
                             className="btn btn-sm btn-outline-danger"
                             title="Supprimer"
                             onClick={() => handleDelete(item.id)}
-                            disabled={loading}
+                            disabled={isLoading}
                           >
                             <FaTrash />
                           </button>
@@ -254,7 +221,7 @@ const EnregistrementsList = () => {
                       </td>
                     </tr>
                   ))}
-                  {!loading && enregistrements.length === 0 && (
+                  {!isLoading && enregistrements.length === 0 && (
                     <tr>
                       <td colSpan="6" className="text-center py-4">
                         Aucun enregistrement trouvé
