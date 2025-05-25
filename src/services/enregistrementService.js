@@ -12,13 +12,13 @@ const enregistrementService = {
 
   // Valider une sortie
   validerSortie: async (codePin) => {
-    const response = await api.patch(`/enregistrement/${codePin}`, { codePin });
+    const response = await api.patch(`/enregistrement/${codePin}`);
     return response.data;
   },
 
   // Obtenir la liste des enregistrements
-  getListe: async () => {
-    const response = await api.get("/enregistrement/liste");
+  getListe: async (params = {}) => {
+    const response = await api.get("/index", { params });
     return response.data;
   },
 

@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import enregistrementService from "../services/enregistrementService";
 
 // Hook pour obtenir la liste des enregistrements
-export const useEnregistrementsList = () => {
+export const useEnregistrementsList = (filters = {}) => {
   return useQuery({
-    queryKey: ["enregistrements"],
-    queryFn: enregistrementService.getListe,
+    queryKey: ["enregistrements", filters],
+    queryFn: () => enregistrementService.getListe(filters),
     staleTime: 30 * 1000, // Les données sont considérées comme fraîches pendant 30 secondes
   });
 };

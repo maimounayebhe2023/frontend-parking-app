@@ -22,21 +22,20 @@ function EnregistrementsParDate() {
     data: enregistrements = [],
     isLoading,
     error,
-  } = useEnregistrementsList();
+  } = useEnregistrementsList({
+    ...(dateDebut && dateFin && dateFin >= dateDebut
+      ? {
+          date_debut: dateDebut,
+          date_fin: dateFin,
+        }
+      : {}),
+  });
+
   const { exportEnregistrements, isExporting, exportError } =
     useExportEnregistrements();
 
-  // Filtrer les enregistrements par date
-  const enregistrementsFiltres = React.useMemo(() => {
-    if (!dateDebut || !dateFin) return [];
-
-    return enregistrements.filter((item) => {
-      const date = new Date(item.date_enregistrement);
-      return (
-        date >= new Date(dateDebut) && date <= new Date(dateFin + "T23:59:59")
-      );
-    });
-  }, [enregistrements, dateDebut, dateFin]);
+  // Supprimer le filtrage côté client car il est maintenant géré par l'API
+  const enregistrementsFiltres = enregistrements;
 
   // Gestion du clic en dehors du menu d'export
   useEffect(() => {
@@ -84,7 +83,12 @@ function EnregistrementsParDate() {
       return "Veuillez sélectionner une date de début et une date de fin.";
     if (dateFin < dateDebut)
       return "La date de fin doit être postérieure ou égale à la date de début.";
-    if (enregistrementsFiltres.length === 0 && dateDebut && dateFin)
+    if (
+      enregistrementsFiltres.length === 0 &&
+      dateDebut &&
+      dateFin &&
+      dateFin >= dateDebut
+    )
       return "Aucun enregistrement trouvé pour cette période.";
     return "";
   };
@@ -235,16 +239,16 @@ function EnregistrementsParDate() {
                         </td>
                         <td>{item.nom_conducteur}</td>
                         <td>{item.prenom_conducteur}</td>
-                        <td>{item.plaque_immatricu || "-"}</td>
+                        <td>{item.plaque_engin || "-"}</td>
                         <td>
                           <span
                             className={`badge ${
-                              item.type_engin === "Voiture"
+                              item.typeengin === "Voiture"
                                 ? "bg-primary"
                                 : "bg-info"
                             }`}
                           >
-                            {item.type_engin || "-"}
+                            {item.typeengin || "-"}
                           </span>
                         </td>
                       </tr>

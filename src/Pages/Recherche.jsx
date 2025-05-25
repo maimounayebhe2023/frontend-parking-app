@@ -25,7 +25,7 @@ const CodePinSearch = () => {
       return (
         item.nom_conducteur?.toLowerCase().includes(termeRecherche) ||
         item.prenom_conducteur?.toLowerCase().includes(termeRecherche) ||
-        item.plaque_immatricu?.toLowerCase().includes(termeRecherche) ||
+        item.plaque_engin?.toLowerCase().includes(termeRecherche) ||
         item.code_pin?.toLowerCase().includes(termeRecherche) ||
         new Date(item.date_enregistrement)
           .toLocaleString()
@@ -170,7 +170,7 @@ const CodePinSearch = () => {
                     <tr key={donnee.id}>
                       <td>{donnee.id}</td>
                       <td>{`${donnee.nom_conducteur} ${donnee.prenom_conducteur}`}</td>
-                      <td>{donnee.plaque_immatricu}</td>
+                      <td>{donnee.plaque_engin}</td>
                       <td>
                         <span
                           className={`badge ${
