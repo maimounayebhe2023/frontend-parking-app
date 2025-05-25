@@ -1,0 +1,82 @@
+/* Styles spécifiques à la page Recherche */
+
+/* Ajustements spécifiques pour la barre de recherche */
+.filter-form {
+  gap: 1rem;
+}
+
+.filter-group {
+  flex: 1;
+}
+
+.filter-group input {
+  width: 100%;
+}
+
+/* Style spécifique pour le badge de type d'engin */
+.badge.bg-primary {
+  background-color: #0d6efd !important;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+}
+
+/* Style spécifique pour le badge de statut */
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+/* Style spécifique pour les boutons d'action */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.action-buttons .btn {
+  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+}
+
+.action-buttons .btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Style spécifique pour le message d'erreur */
+.alert-info {
+  background-color: #cff4fc;
+  border-color: #b6effb;
+  color: #055160;
+}
+
+/* Ajustements responsifs spécifiques */
+@media (max-width: 768px) {
+  .filter-form {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .search-btn {
+    width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+}

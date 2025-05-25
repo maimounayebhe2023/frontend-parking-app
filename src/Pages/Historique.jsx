@@ -1,149 +1,273 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import "../style/Historique.css";
+import React, { useState, useEffect } from "react";
+import {
+  FaCalendarAlt,
+  FaSearch,
+  FaFileExcel,
+  FaDatabase,
+  FaFileDownload,
+  FaFileCsv,
+} from "react-icons/fa";
+import { useEnregistrementsList } from "../hooks/useEnregistrements";
+import { useExportEnregistrements } from "../hooks/useExport";
+import "../Style/Historique.css";
 
 function EnregistrementsParDate() {
-  const [dateDebut, setDateDebut] = useState('');
-  const [dateFin, setDateFin] = useState('');
-  const [enregistrements, setEnregistrements] = useState([]);
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [dateDebut, setDateDebut] = useState("");
+  const [dateFin, setDateFin] = useState("");
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [exportMenuRef] = useState(React.createRef());
+  const [exportMessage, setExportMessage] = useState("");
 
-  const fetchEnregistrements = async () => {
-    if (!dateDebut || !dateFin) {
-      setMessage('Veuillez sélectionner une date de début et une date de fin.');
-      setEnregistrements([]);
-      return;
-    }
-    if (dateFin < dateDebut) {
-      setMessage('La date de fin doit être postérieure ou égale à la date de début.');
-      setEnregistrements([]);
-      return;
-    }
-    setLoading(true);
-    setMessage('');
-    try {
-      const response = await axios.get('http://localhost:8000/api/enregistrement', {
-        params: { date_debut: dateDebut, date_fin: dateFin }
-      });
-
-      if (response.status === 200) {
-        if (response.data.length === 0) {
-          setMessage('Aucun enregistrement trouvé pour cette période.');
-          setEnregistrements([]);
-        } else {
-          setEnregistrements(response.data);
-          setMessage('');
+  const {
+    data: enregistrements = [],
+    isLoading,
+    error,
+  } = useEnregistrementsList({
+    ...(dateDebut && dateFin && dateFin >= dateDebut
+      ? {
+          date_debut: dateDebut,
+          date_fin: dateFin,
         }
-      } else {
-        setMessage(response.data.message || 'Erreur lors de la récupération des données.');
-        setEnregistrements([]);
+      : {}),
+  });
+
+  const { exportEnregistrements, isExporting, exportError } =
+    useExportEnregistrements();
+
+  // Supprimer le filtrage côté client car il est maintenant géré par l'API
+  const enregistrementsFiltres = enregistrements;
+
+  // Gestion du clic en dehors du menu d'export
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        exportMenuRef.current &&
+        !exportMenuRef.current.contains(event.target)
+      ) {
+        setShowExportMenu(false);
       }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleExportClick = () => {
+    if (enregistrementsFiltres.length === 0) {
+      setExportMessage("Aucune donnée à exporter");
+      setTimeout(() => setExportMessage(""), 3000);
+      return;
+    }
+    setShowExportMenu(!showExportMenu);
+  };
+
+  const handleExport = async (format) => {
+    try {
+      if (format === "excel") {
+        await exportEnregistrements(enregistrementsFiltres);
+      } else if (format === "csv") {
+        // Utiliser le même hook mais avec un format différent
+        await exportEnregistrements(enregistrementsFiltres, "csv");
+      }
+      setShowExportMenu(false);
     } catch (error) {
-      console.error('Erreur :', error);
-      setMessage('Une erreur est survenue lors de la récupération des données.');
-      setEnregistrements([]);
-    } finally {
-      setLoading(false);
+      setExportMessage(error.message || "Erreur lors de l'exportation");
+      setTimeout(() => setExportMessage(""), 3000);
     }
   };
 
-  const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(enregistrements);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Enregistrements');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(blob, 'historique_enregistrements.xlsx');
+  const getMessage = () => {
+    if (error) return "Erreur lors du chargement des données";
+    if (exportError) return exportError.message;
+    if (!dateDebut || !dateFin)
+      return "Veuillez sélectionner une date de début et une date de fin.";
+    if (dateFin < dateDebut)
+      return "La date de fin doit être postérieure ou égale à la date de début.";
+    if (
+      enregistrementsFiltres.length === 0 &&
+      dateDebut &&
+      dateFin &&
+      dateFin >= dateDebut
+    )
+      return "Aucun enregistrement trouvé pour cette période.";
+    return "";
   };
 
   return (
-    <div className="container mt-4 p-4 rounded bg-custom min-height">
-      <h2 className="mb-4 text-primary">Historique des enregistrements</h2>
+    <div className="dashboard-content">
+      {/* Carte de filtres */}
+      <div className="dashboard-card">
+        <div className="filter-container">
+          <div className="filter-header">
+            <div className="filter-title-container">
+              <h2 className="filter-title">Historique des enregistrements</h2>
+              <div className="d-flex align-items-center gap-3">
+                <div className="export-dropdown" ref={exportMenuRef}>
+                  <button
+                    className="export-btn"
+                    onClick={handleExportClick}
+                    disabled={isLoading || isExporting}
+                  >
+                    <FaFileDownload />
+                    {isExporting ? "Exportation..." : "Exporter"}
+                  </button>
+                  {showExportMenu && (
+                    <div className="export-menu">
+                      <button onClick={() => handleExport("excel")}>
+                        <FaFileExcel /> Excel
+                      </button>
+                      <button onClick={() => handleExport("csv")}>
+                        <FaFileCsv /> CSV
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <FaCalendarAlt className="filter-title-icon" />
+              </div>
+            </div>
+          </div>
 
-      <div className="row mb-3 gy-2 align-items-end">
-        <div className="col-sm-6 col-md-3">
-          <label htmlFor="dateDebut" className="form-label small text-secondary text-start">Date début</label>
-          <input
-            id="dateDebut"
-            type="date"
-            className="form-control form-control-sm"
-            value={dateDebut}
-            onChange={e => setDateDebut(e.target.value)}
-          />
-        </div>
-        <div className="col-sm-6 col-md-3">
-          <label htmlFor="dateFin" className="form-label small text-secondary text-start">Date fin</label>
-          <input
-            id="dateFin"
-            type="date"
-            className="form-control form-control-sm"
-            value={dateFin}
-            onChange={e => setDateFin(e.target.value)}
-          />
-        </div>
-        <div className="col-sm-12 col-md-6 d-flex gap-2">
-          <button
-            className="btn btn-primary btn-sm flex-fill"
-            onClick={fetchEnregistrements}
-            disabled={loading}
+          <form
+            className="filter-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
           >
-            {loading ? 'Chargement...' : 'Rechercher'}
-          </button>
-          <button
-            className="btn btn-success btn-sm flex-fill"
-            onClick={exportToExcel}
-            disabled={enregistrements.length === 0 || loading}
-          >
-            Exporter Excel
-          </button>
+            <div className="filter-group">
+              <label htmlFor="dateDebut">
+                Date de début
+                <span className="text-muted"> (requis)</span>
+              </label>
+              <input
+                id="dateDebut"
+                type="date"
+                value={dateDebut}
+                onChange={(e) => setDateDebut(e.target.value)}
+                disabled={isLoading}
+                required
+                max={dateFin || undefined}
+              />
+            </div>
+
+            <div className="filter-group">
+              <label htmlFor="dateFin">
+                Date de fin
+                <span className="text-muted"> (requis)</span>
+              </label>
+              <input
+                id="dateFin"
+                type="date"
+                value={dateFin}
+                onChange={(e) => setDateFin(e.target.value)}
+                disabled={isLoading}
+                required
+                min={dateDebut || undefined}
+              />
+            </div>
+
+            <div className="filter-actions">
+              <button
+                type="submit"
+                className="search-btn"
+                disabled={isLoading || !dateDebut || !dateFin}
+              >
+                <FaSearch />
+                {isLoading ? "Chargement..." : "Rechercher"}
+              </button>
+            </div>
+          </form>
+
+          {(getMessage() || exportMessage) && (
+            <div
+              className={`alert ${
+                exportMessage ? "alert-warning" : "alert-info"
+              } mt-3`}
+              role="alert"
+            >
+              {exportMessage || getMessage()}
+            </div>
+          )}
         </div>
       </div>
 
-      {message && (
-        <div className="alert alert-info" role="alert">
-          {message}
-        </div>
-      )}
-
-      <div className="table-responsive">
-        <table className="ttable table table-striped table-hover m-0 no-col-borders  text-start">
-          <thead className="table-primary fw-bold custom-header-texttable-primary text-white fw-bold">
-            <tr>
-              <th>Date Enregistrement</th>
-              <th>Date Sortie</th>
-              <th>Nom </th>
-              <th>Prénom </th>
-              <th>N° Plaque</th>
-              <th>Type Engin</th>
-            </tr>
-          </thead>
-          <tbody>
-            {enregistrements.length > 0 ? (
-              enregistrements.map((item, index) => (
-                <tr key={index} className="ligne-enregistrement">
-                  <td>{item.date_enregistrement}</td>
-                  <td>{item.date_sortie || '-'}</td>
-                  <td>{item.nom_conducteur}</td>
-                  <td>{item.prenom_conducteur}</td>
-                  <td>{item.plaque_immatricu || '-'}</td>
-                  <td>{item.type_engin || '-'}</td>
-                </tr>
-              ))
-            ) : (
-              !message && (
-                <tr>
-                  <td colSpan="6" className="text-center text-secondary">
-                    Aucun enregistrement à afficher
-                  </td>
-                </tr>
-              )
+      {/* Carte des résultats */}
+      <div className="dashboard-card">
+        <div className="results-container">
+          <div className="results-header">
+            <h3 className="results-title">Résultats de la recherche</h3>
+            {enregistrementsFiltres.length > 0 && (
+              <span className="results-count">
+                <FaDatabase />
+                <span>
+                  {enregistrementsFiltres.length} enregistrement
+                  {enregistrementsFiltres.length > 1 ? "s" : ""}
+                </span>
+              </span>
             )}
-          </tbody>
-        </table>
+          </div>
+
+          {isLoading ? (
+            <div className="text-center py-4">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Chargement...</span>
+              </div>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Date Enregistrement</th>
+                    <th>Date Sortie</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>N° Plaque</th>
+                    <th>Type Engin</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enregistrementsFiltres.length > 0 ? (
+                    enregistrementsFiltres.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          {new Date(item.date_enregistrement).toLocaleString()}
+                        </td>
+                        <td>
+                          {item.date_sortie
+                            ? new Date(item.date_sortie).toLocaleString()
+                            : "-"}
+                        </td>
+                        <td>{item.nom_conducteur}</td>
+                        <td>{item.prenom_conducteur}</td>
+                        <td>{item.plaque_engin || "-"}</td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              item.typeengin === "Voiture"
+                                ? "bg-primary"
+                                : "bg-info"
+                            }`}
+                          >
+                            {item.typeengin || "-"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="6"
+                        className="text-center text-secondary py-4"
+                      >
+                        Aucun enregistrement à afficher
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

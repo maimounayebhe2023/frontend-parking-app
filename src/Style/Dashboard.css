@@ -1,0 +1,296 @@
+/* Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+  color: white;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.closed {
+  width: 70px;
+}
+
+.sidebar.closed .sidebar-header h2 {
+  display: none;
+}
+
+.sidebar.closed .nav-item {
+  padding: 1rem;
+  justify-content: center;
+}
+
+.sidebar.closed .nav-item span {
+  display: none;
+}
+
+.sidebar.closed .nav-item svg {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  color: #3498db;
+  transition: all 0.3s ease;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+  color: white;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.sidebar.closed .toggle-btn {
+  margin-left: 0;
+}
+
+.sidebar-nav {
+  padding: 1rem 0;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.nav-item span {
+  transition: opacity 0.3s ease;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item.active {
+  background-color: #3498db;
+  color: white;
+}
+
+.nav-item svg {
+  font-size: 1.25rem;
+  min-width: 24px;
+  transition: all 0.3s ease;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-header {
+  background-color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-menu-btn {
+  display: none; /* Hidden by default, shown via inline style when needed */
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.header-menu-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #3498db;
+}
+
+.header-menu-btn:active {
+  transform: scale(0.95);
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.current-time {
+  font-size: 0.9rem;
+  color: #666;
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  border-radius: 20px;
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-menu-btn {
+    display: flex !important; /* Always show on mobile */
+  }
+
+  .sidebar {
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(0);
+  }
+
+  .sidebar.closed {
+    transform: translateX(-100%);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* Animation for sidebar toggle */
+.sidebar {
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+
+/* Card styles for dashboard content */
+.dashboard-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Tooltip styles for closed sidebar */
+.sidebar.closed .nav-item {
+  position: relative;
+}
+
+.sidebar.closed .nav-item::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  margin-left: 1rem;
+  z-index: 1000;
+}
+
+.sidebar.closed .nav-item::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right-color: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  margin-left: -6px;
+  z-index: 1000;
+}
+
+.sidebar.closed .nav-item:hover::before,
+.sidebar.closed .nav-item:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Ajustement pour éviter que le tooltip ne soit coupé */
+.sidebar.closed .nav-item:hover {
+  z-index: 1000;
+}

@@ -1,0 +1,93 @@
+/* Styles spécifiques à la page Liste */
+
+/* Style pour le badge de statut */
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+/* Style pour le badge de type d'engin */
+.badge.bg-primary {
+  background-color: #0d6efd !important;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+}
+
+/* Style pour le badge de statut */
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+/* Style pour les boutons d'action */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.action-buttons .btn {
+  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+}
+
+.action-buttons .btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Style pour l'alerte d'erreur */
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+  color: #842029;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animation pour les alertes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ajustements responsifs spécifiques */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+
+  .results-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .export-dropdown {
+    width: 100%;
+  }
+
+  .export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

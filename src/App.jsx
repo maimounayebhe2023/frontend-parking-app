@@ -1,60 +1,40 @@
 /*import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'*/
 //import axios from 'axios';
-import React, { useState } from 'react';
-import FormAjou from './Pages/FormAjou';
-import SortieForm from './Pages/ValideSortie';
-import EnregistrementsList from './Pages/Liste';
-import EnregistrementsParDate from './Pages/Historique';
-import CodePinSearch from './Pages/Recherche';
-import AfficherEnregistrement from './Pages/details';
+import React from "react";
+import FormAjou from "./Pages/FormAjou";
+import SortieForm from "./Pages/ValideSortie";
+import EnregistrementsList from "./Pages/Liste";
+import EnregistrementsParDate from "./Pages/Historique";
+import CodePinSearch from "./Pages/Recherche";
+import AfficherEnregistrement from "./Pages/details";
+import DashboardLayout from "./components/DashboardLayout";
+import Accueil from "./Pages/Accueil";
+import NotFound from "./Pages/NotFound";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-import './App.css'
-import 'bootstrap/dist/css/bootstrap.min.css'; 
-import { Routes, Route } from 'react-router-dom';
+import "./App.css";
+import "./Style/Dashboard.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
- /* const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
- ;*/
- return(
-    <Routes>
-      <Route path='/form' element= { < FormAjou /> } /> 
-      <Route path='/ValideSortie' element= { < SortieForm />} />
-      <Route path='/Liste' element={ <EnregistrementsList/>} />
-      <Route path='/His' element={ <EnregistrementsParDate/>} />
-      <Route path='/Details' element={ <AfficherEnregistrement/>} />
-      
-      <Route path='/Recherche' element={ <CodePinSearch />} />
-    </Routes>
-   
- )
- 
+    <ErrorBoundary>
+      <Routes>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route index element={<Accueil />} />
+          <Route path="validation-sortie" element={<SortieForm />} />
+          <Route path="nouvelle-entree" element={<FormAjou />} />
+          <Route path="liste-actuelle" element={<EnregistrementsList />} />
+          <Route path="historique" element={<EnregistrementsParDate />} />
+          <Route path="recherche" element={<CodePinSearch />} />
+          <Route path="details/:id" element={<AfficherEnregistrement />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
+  );
 }
 
-
-export default App
+export default App;
