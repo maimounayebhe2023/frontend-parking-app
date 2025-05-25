@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
-  FaParking,
   FaSignInAlt,
   FaSignOutAlt,
   FaList,
@@ -82,7 +81,11 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="sidebar-header">
-          <FaParking className="logo-icon" />
+          <img
+            src="/parking-icon.svg"
+            alt="Parking UNC"
+            className="logo-icon"
+          />
           <h2>Parking UNC</h2>
           <button
             className="toggle-btn"
