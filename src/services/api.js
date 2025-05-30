@@ -1,93 +1,48 @@
 import axios from "axios";
 
-// Configuration de base d'axios
-const api = axios.create({
-  baseURL: "http://localhost:8000/api",
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
+// Client non authentifié pour l'authentification
+export const publicApi = axios.create({
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Intercepteur pour gérer les erreurs globalement
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Vous pouvez ajouter ici une logique globale de gestion des erreurs
-    // Par exemple, rediriger vers la page de login si l'erreur est 401
-    if (error.response?.status === 401) {
-      // Gérer l'expiration de la session
-      console.error("Session expirée");
+// Configuration de base d'axios pour les requêtes authentifiées
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Intercepteur pour ajouter le token aux requêtes authentifiées
+api.interceptors.request.use(
+  (config) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.token) {
+      config.headers.Authorization = `Bearer ${user.token}`;
     }
+    return config;
+  },
+  (error) => {
     return Promise.reject(error);
   }
 );
 
-// Service pour les enregistrements
-export const enregistrementService = {
-  // Ajouter un nouvel enregistrement
-  ajouter: async (data) => {
-    try {
-      const response = await api.post("/enregistrement/ajouter", data);
-      return response.data;
-    } catch (error) {
-      throw (
-        error.response?.data || {
-          message: "Une erreur est survenue lors de l'ajout",
-        }
-      );
+// Intercepteur pour gérer les erreurs globalement
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Déconnexion et redirection vers la page de login
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
-  },
-
-  // Valider une sortie
-  validerSortie: async (codePin) => {
-    try {
-      const response = await api.patch(`/enregistrement/${codePin}`, {
-        codePin,
-      });
-      return response.data;
-    } catch (error) {
-      throw (
-        error.response?.data || {
-          message: "Une erreur est survenue lors de la validation",
-        }
-      );
-    }
-  },
-
-  // Obtenir la liste des enregistrements
-  getListe: async () => {
-    try {
-      const response = await api.get("/enregistrement/liste");
-      return response.data;
-    } catch (error) {
-      throw (
-        error.response?.data || {
-          message:
-            "Une erreur est survenue lors de la récupération des données",
-        }
-      );
-    }
-  },
-
-  // Obtenir les statistiques
-  getStatistiques: async () => {
-    try {
-      const response = await api.get("/enregistrement/statistiques");
-      return response.data;
-    } catch (error) {
-      throw (
-        error.response?.data || {
-          message:
-            "Une erreur est survenue lors de la récupération des statistiques",
-        }
-      );
-    }
-  },
-};
-
-// Vous pouvez ajouter d'autres services ici selon les besoins
-// Par exemple :
-// export const authService = { ... }
-// export const userService = { ... }
+    return Promise.reject(error);
+  }
+);
 
 export default api;
