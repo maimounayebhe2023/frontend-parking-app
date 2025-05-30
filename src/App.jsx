@@ -12,17 +12,22 @@ import DashboardLayout from "./components/DashboardLayout";
 import Accueil from "./Pages/Accueil";
 import NotFound from "./Pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Login from "./Pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Navigate } from "react-router-dom";
 
 import "./App.css";
 import "./Style/Dashboard.css";
+import "./Style/Login.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
-function App() {
+// Layout protégé qui englobe toutes les routes authentifiées
+const ProtectedLayout = () => {
   return (
-    <ErrorBoundary>
-      <Routes>
-        <Route path="/" element={<DashboardLayout />}>
+    <ProtectedRoute>
+      <DashboardLayout>
+        <Routes>
           <Route index element={<Accueil />} />
           <Route path="validation-sortie" element={<SortieForm />} />
           <Route path="nouvelle-entree" element={<FormAjou />} />
@@ -31,7 +36,27 @@ function App() {
           <Route path="recherche" element={<CodePinSearch />} />
           <Route path="details/:id" element={<AfficherEnregistrement />} />
           <Route path="*" element={<NotFound />} />
-        </Route>
+        </Routes>
+      </DashboardLayout>
+    </ProtectedRoute>
+  );
+};
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <Routes>
+        {/* Route publique */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Redirection de la racine vers le dashboard */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+        {/* Toutes les routes protégées sous /dashboard */}
+        <Route path="/dashboard/*" element={<ProtectedLayout />} />
+
+        {/* Capture toutes les autres routes et redirige vers le dashboard */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </ErrorBoundary>
   );
