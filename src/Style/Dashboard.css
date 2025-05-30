@@ -3,6 +3,8 @@
   display: flex;
   min-height: 100vh;
   background-color: #f8f9fa;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Sidebar Styles */
@@ -14,6 +16,9 @@
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
 }
 
 .sidebar.closed {
@@ -122,12 +127,29 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-left: 280px;
+  min-height: 100vh;
+  padding-top: 70px; /* Hauteur du header */
+}
+
+.sidebar.closed + .main-content {
+  margin-left: 70px;
 }
 
 .dashboard-header {
   background-color: white;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 280px;
+  right: 0;
+  z-index: 100;
+  height: 70px;
+}
+
+.sidebar.closed + .main-content .dashboard-header {
+  left: 70px;
 }
 
 .header-content {
@@ -189,6 +211,7 @@
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
+  height: calc(100vh - 70px); /* Hauteur totale moins le header */
 }
 
 /* Responsive Design */
@@ -197,19 +220,13 @@
     display: flex !important; /* Always show on mobile */
   }
 
-  .sidebar {
-    position: fixed;
-    height: 100vh;
-    z-index: 1000;
-    transform: translateX(0);
-  }
-
-  .sidebar.closed {
-    transform: translateX(-100%);
+  .dashboard-header {
+    left: 0;
   }
 
   .main-content {
     margin-left: 0;
+    padding-top: 70px;
   }
 }
 

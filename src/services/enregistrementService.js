@@ -28,6 +28,12 @@ const enregistrementService = {
     return response.data;
   },
 
+  // Obtenir les détails d'un enregistrement
+  getDetails: async (id) => {
+    const response = await api.get(`/Affiche/${id}`);
+    return response.data;
+  },
+
   /**
    * Exporte les enregistrements au format Excel côté client
    * @param {Array} enregistrements - Liste des enregistrements à exporter

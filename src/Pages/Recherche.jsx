@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaSearch, FaEye, FaTrash, FaDatabase } from "react-icons/fa";
 import { useEnregistrementsList } from "../hooks/useEnregistrements";
 import "../Style/common.css";
@@ -15,6 +16,8 @@ const CodePinSearch = () => {
     error,
     refetch,
   } = useEnregistrementsList();
+
+  const navigate = useNavigate();
 
   // Filtrage des données en fonction de la recherche
   const donneesFiltrees = useMemo(() => {
@@ -55,6 +58,10 @@ const CodePinSearch = () => {
     } catch (error) {
       console.error("Erreur:", error);
     }
+  };
+
+  const handleViewDetails = (id) => {
+    navigate(`/dashboard/details/${id}`);
   };
 
   // Calcul de la pagination
@@ -200,6 +207,7 @@ const CodePinSearch = () => {
                             className="btn btn-sm btn-outline-primary"
                             title="Voir détails"
                             disabled={isLoading}
+                            onClick={() => handleViewDetails(donnee.id)}
                           >
                             <FaEye />
                           </button>

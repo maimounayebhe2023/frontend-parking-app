@@ -48,3 +48,11 @@ export const useEnregistrementsStats = () => {
     staleTime: 60 * 1000, // Les données sont considérées comme fraîches pendant 1 minute
   });
 };
+
+export const useEnregistrementDetails = (id) => {
+  return useQuery({
+    queryKey: ["enregistrement", id],
+    queryFn: () => enregistrementService.getDetails(id),
+    enabled: !!id,
+  });
+};
