@@ -197,7 +197,7 @@ const EnregistrementsList = () => {
                             item.date_sortie ? "bg-success" : "bg-danger"
                           }`}
                         >
-                          {item.date_sortie ? "Sorti" : "Non sorti"}
+                          {item.date_sortie ? "récuperé" : "Non récuperé"}
                         </span>
                       </td>
                       <td>
