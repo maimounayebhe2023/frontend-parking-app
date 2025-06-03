@@ -9,6 +9,7 @@ import {
   FaBars,
   FaTimes,
   FaHome,
+  FaUsers,
 } from "react-icons/fa";
 
 const Sidebar = ({ onLogout }) => {
@@ -40,20 +41,20 @@ const Sidebar = ({ onLogout }) => {
     {
       path: "/dashboard/nouvelle-entree",
       icon: <FaSignInAlt />,
-      label: "Nouvelle Entrée",
-      tooltip: "Enregistrer une nouvelle entrée",
+      label: "Nouvel Enregitrement",
+      tooltip: "Effectuer un nouveau enregistrement",
     },
     {
       path: "/dashboard/validation-sortie",
       icon: <FaSignOutAlt />,
-      label: "Validation Sortie",
-      tooltip: "Valider une sortie de véhicule",
+      label: "Une recupération",
+      tooltip: "Autoriser une recupération ",
     },
     {
       path: "/dashboard/liste-actuelle",
       icon: <FaList />,
       label: "Liste Actuelle",
-      tooltip: "Voir les véhicules en stationnement",
+      tooltip: "Voir les engins en stationnement",
     },
     {
       path: "/dashboard/historique",
@@ -67,6 +68,12 @@ const Sidebar = ({ onLogout }) => {
       label: "Recherche",
       tooltip: "Rechercher un véhicule",
     },
+    {
+      path: "/dashboard/utilisateurs",
+      icon: <FaUsers />,
+      label: "Utilisateurs",
+      tooltip: "Gérer les utilisateurs",
+    },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -75,7 +82,7 @@ const Sidebar = ({ onLogout }) => {
     <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
       <div className="sidebar-header">
         <img src="/parking-icon.svg" alt="Parking UNC" className="logo-icon" />
-        <h2>Parking UNC</h2>
+        <h2>UNCPARK</h2>
         <button
           className="toggle-btn"
           onClick={() => setSidebarOpen(!sidebarOpen)}
