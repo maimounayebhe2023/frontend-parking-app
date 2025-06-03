@@ -24,7 +24,7 @@ const enregistrementService = {
 
   // Obtenir les statistiques
   getStatistiques: async () => {
-    const response = await api.get("/enregistrement/statistiques");
+    const response = await api.get("/statistiques");
     return response.data;
   },
 
