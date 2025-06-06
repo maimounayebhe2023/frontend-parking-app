@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaDatabase,
@@ -7,15 +7,24 @@ import {
   FaTrash,
   FaEdit,
 } from "react-icons/fa";
-import { useUsersList, useDeleteUser } from  "../hooks/useUtilisateurs";
+import { useUsersList, useDeleteUser } from "../hooks/useUtilisateurs";
 import "../Style/common.css";
 import "../Style/Liste.css";
 
 const ListeUtilisateurs = () => {
   const navigate = useNavigate();
-  // Utilisation des hooks personnalisés
-  const { data: utilisateurs = [], isLoading, error } = useUsersList();
+  const { data, isLoading, error } = useUsersList();
   const deleteUser = useDeleteUser();
+
+  // Effet pour logger les données reçues
+  useEffect(() => {
+    console.log("État du chargement:", isLoading);
+    console.log("Données reçues:", data);
+    console.log("Erreur éventuelle:", error);
+  }, [data, isLoading, error]);
+
+  // S'assurer que data est un tableau
+  const utilisateurs = Array.isArray(data?.utilisateurs) ? data.utilisateurs : [];
 
   const handleDelete = async (id) => {
     if (
@@ -27,9 +36,37 @@ const ListeUtilisateurs = () => {
     try {
       await deleteUser.mutateAsync(id);
     } catch (err) {
-      console.error("Erreur:", err);
+      console.error("Erreur de suppression:", err);
     }
   };
+
+  // Afficher le chargement
+  if (isLoading) {
+    return (
+      <div className="dashboard-content">
+        <div className="dashboard-card">
+          <div className="text-center py-4">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Chargement...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Afficher l'erreur si elle existe
+  if (error) {
+    return (
+      <div className="dashboard-content">
+        <div className="dashboard-card">
+          <div className="alert alert-danger" role="alert">
+            Erreur de chargement: {error.message || "Une erreur est survenue"}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-content">
@@ -57,35 +94,29 @@ const ListeUtilisateurs = () => {
             </button>
           </div>
 
-          {(deleteUser.error || error) && (
+          {deleteUser.error && (
             <div className="alert alert-danger mt-3" role="alert">
-              {deleteUser.error?.message || error?.message || "Une erreur est survenue"}
+              {deleteUser.error.message || "Erreur lors de la suppression"}
             </div>
           )}
 
-          {isLoading ? (
-            <div className="text-center py-4">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Chargement...</span>
-              </div>
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Rôle</th>
-                    <th>Date de création</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {utilisateurs.map((user) => (
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Rôle</th>
+                  <th>Date de création</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {utilisateurs.length > 0 ? (
+                  utilisateurs.map((user) => (
                     <tr key={user.id}>
-                      <td>{user.nom}</td>
-                      <td>{user.email}</td>
+                      <td>{user.name}</td>
+                      <td>{user.phone}</td>
                       <td>
                         <span
                           className={`badge ${
@@ -96,21 +127,14 @@ const ListeUtilisateurs = () => {
                         </span>
                       </td>
                       <td>
-                        {new Date(user.date_creation).toLocaleString()}
+                        {new Date(user.created_at).toLocaleString()}
                       </td>
                       <td>
                         <div className="action-buttons">
                           <button
-                            className="btn btn-sm btn-outline-primary"
-                            title="Voir détails"
-                            disabled={isLoading || deleteUser.isLoading}
-                          >
-                            <FaEye />
-                          </button>
-                          <button
                             className="btn btn-sm btn-outline-warning"
                             title="Modifier"
-                            disabled={isLoading || deleteUser.isLoading}
+                            onClick={() => navigate(`/dashboard/utilisateurs/${user.id}/modifier`)}
                           >
                             <FaEdit />
                           </button>
@@ -118,25 +142,24 @@ const ListeUtilisateurs = () => {
                             className="btn btn-sm btn-outline-danger"
                             title="Supprimer"
                             onClick={() => handleDelete(user.id)}
-                            disabled={isLoading || deleteUser.isLoading}
+                            disabled={deleteUser.isLoading}
                           >
                             <FaTrash />
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}
-                  {!isLoading && utilisateurs.length === 0 && (
-                    <tr>
-                      <td colSpan="5" className="text-center py-4">
-                        Aucun utilisateur trouvé
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center py-4">
+                      Aucun utilisateur trouvé
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

@@ -205,7 +205,7 @@ const EnregistrementsList = () => {
                           <button
                             className="btn btn-sm btn-outline-primary"
                             title="Voir détails"
-                            disabled={isLoading}
+                            onClick={() => navigate(`/dashboard/utilisateurs/${user.id}`)}
                           >
                             <FaEye />
                           </button>
