@@ -9,7 +9,7 @@ const utilisateurService = {
 
   // Ajouter un nouvel utilisateur
   ajouter: async (userData) => {
-    const response = await api.post("/utilisateurs", userData);
+    const response = await api.post("/admin/create-vigile", userData);
     return response.data;
   },
 

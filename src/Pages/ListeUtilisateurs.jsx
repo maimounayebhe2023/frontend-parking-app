@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaDatabase,
   FaUserPlus,
@@ -11,6 +12,7 @@ import "../Style/common.css";
 import "../Style/Liste.css";
 
 const ListeUtilisateurs = () => {
+  const navigate = useNavigate();
   // Utilisation des hooks personnalisés
   const { data: utilisateurs = [], isLoading, error } = useUsersList();
   const deleteUser = useDeleteUser();
@@ -48,7 +50,7 @@ const ListeUtilisateurs = () => {
             </div>
             <button
               className="btn btn-primary d-flex align-items-center gap-2"
-              onClick={() => {/* TODO: Implémenter l'ajout d'utilisateur */}}
+              onClick={() => navigate("/dashboard/utilisateurs/nouveau")}
             >
               <FaUserPlus />
               Nouvel Utilisateur

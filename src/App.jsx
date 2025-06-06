@@ -15,6 +15,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Login from "./Pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom";
+import ListeUtilisateurs from "./Pages/ListeUtilisateurs";
+import FormUtilisateur from "./Pages/FormUtilisateur";
 
 import "./App.css";
 import "./Style/Dashboard.css";
@@ -35,6 +37,8 @@ const ProtectedLayout = () => {
           <Route path="historique" element={<EnregistrementsParDate />} />
           <Route path="recherche" element={<CodePinSearch />} />
           <Route path="details/:id" element={<AfficherEnregistrement />} />
+          <Route path="utilisateurs" element={<ListeUtilisateurs />} />
+          <Route path="utilisateurs/nouveau" element={<FormUtilisateur />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </DashboardLayout>

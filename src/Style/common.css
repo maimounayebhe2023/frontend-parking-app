@@ -203,3 +203,14 @@
     margin: 0 -1rem;
   }
 }
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.form-buttons button {
+  min-width: 120px;
+}
