@@ -7,7 +7,7 @@ const FormUtilisateur = () => {
   const navigate = useNavigate();
   const addUser = useAddUser();
   const [formData, setFormData] = useState({
-    nom: "",
+    name: "",
     phone: "",
     password: "",
     role: "vigile", // Par défaut
@@ -48,20 +48,20 @@ const FormUtilisateur = () => {
 
           <form onSubmit={handleSubmit} className="custom-form">
             <div className="form-group">
-              <label htmlFor="nom">Nom complet</label>
+              <label htmlFor="name">Nom complet</label>
               <input
                 type="text"
                 className="form-control"
-                id="nom"
-                name="nom"
-                value={formData.nom}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="phone">Téléphone</label>
               <input
                 type="text"
                 className="form-control"
@@ -97,7 +97,7 @@ const FormUtilisateur = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="user">vigile</option>
+                <option value="vigile">Vigile</option>
                 <option value="admin">Admin</option>
               </select>
             </div>

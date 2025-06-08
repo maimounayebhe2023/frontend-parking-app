@@ -134,7 +134,7 @@ const ListeUtilisateurs = () => {
                           <button
                             className="btn btn-sm btn-outline-warning"
                             title="Modifier"
-                            onClick={() => navigate(`/dashboard/utilisateurs/${user.id}/modifier`)}
+                            onClick={() => navigate(`/dashboard/utilisateurs/${user.id}`)}
                           >
                             <FaEdit />
                           </button>
