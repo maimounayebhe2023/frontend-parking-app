@@ -55,22 +55,23 @@ const Sidebar = ({ onLogout }) => {
     {
       path: "/dashboard/liste-actuelle",
       icon: <FaList />,
-      label: "Liste Actuelle",
+      label: "Liste ",
       tooltip: "Voir les engins en stationnement",
     },
     {
       path: "/dashboard/historique",
       icon: <FaHistory />,
       label: "Historique",
-      tooltip: "Consulter l'historique des entrées/sorties",
+      tooltip: "Consulter l'historique des stationnements",
     },
+    /*
     {
       path: "/dashboard/recherche",
       icon: <FaSearch />,
       label: "Recherche",
       tooltip: "Rechercher un véhicule",
-    },
-    // Menu Utilisateurs visible uniquement pour les administrateurs
+    },*/
+    // Menu visible uniquement pour les administrateurs
     ...(user?.role === "admin" ? [
       {
         path: "/dashboard/utilisateurs",
