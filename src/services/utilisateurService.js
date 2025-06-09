@@ -21,30 +21,11 @@ const utilisateurService = {
 
   // Supprimer un utilisateur
   supprimer: async (id) => {
-    const response = await api.delete(`/utilisateurs/${id}`);
+    const response = await api.delete(`/utilisateurs/sup/${id}`);
     return response.data;
   },
 
-  // Récupérer les détails d'un utilisateur
-  getDetails: async (id) => {
-    const response = await api.get(`/utilisateurs/${id}`);
-    return response.data;
-  },
 
-  // Changer le mot de passe d'un utilisateur
-  changerMotDePasse: async (id, { ancienMotDePasse, nouveauMotDePasse }) => {
-    const response = await api.post(`/utilisateurs/${id}/changer-mot-de-passe`, {
-      ancien_mot_de_passe: ancienMotDePasse,
-      nouveau_mot_de_passe: nouveauMotDePasse,
-    });
-    return response.data;
-  },
-
-  // Réinitialiser le mot de passe d'un utilisateur (admin seulement)
-  reinitialiserMotDePasse: async (id) => {
-    const response = await api.post(`/utilisateurs/${id}/reinitialiser-mot-de-passe`);
-    return response.data;
-  },
 };
 
 export default utilisateurService; 

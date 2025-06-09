@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaDatabase,
@@ -15,6 +15,7 @@ const ListeUtilisateurs = () => {
   const navigate = useNavigate();
   const { data, isLoading, error } = useUsersList();
   const deleteUser = useDeleteUser();
+  const [deleteError, setDeleteError] = useState("");
 
   // Effet pour logger les données reçues
   useEffect(() => {
@@ -33,10 +34,17 @@ const ListeUtilisateurs = () => {
       return;
     }
 
+    setDeleteError("");
     try {
       await deleteUser.mutateAsync(id);
     } catch (err) {
       console.error("Erreur de suppression:", err);
+      setDeleteError(
+        err.response?.data?.message || 
+        "Une erreur est survenue lors de la suppression de l'utilisateur. Veuillez réessayer."
+      );
+      // Afficher l'erreur pendant 5 secondes
+      setTimeout(() => setDeleteError(""), 5000);
     }
   };
 
@@ -94,9 +102,9 @@ const ListeUtilisateurs = () => {
             </button>
           </div>
 
-          {deleteUser.error && (
+          {deleteError && (
             <div className="alert alert-danger mt-3" role="alert">
-              {deleteUser.error.message || "Erreur lors de la suppression"}
+              {deleteError}
             </div>
           )}
 
@@ -105,7 +113,7 @@ const ListeUtilisateurs = () => {
               <thead>
                 <tr>
                   <th>Nom</th>
-                  <th>Email</th>
+                  <th>Téléphone</th>
                   <th>Rôle</th>
                   <th>Date de création</th>
                   <th>Actions</th>
@@ -142,9 +150,13 @@ const ListeUtilisateurs = () => {
                             className="btn btn-sm btn-outline-danger"
                             title="Supprimer"
                             onClick={() => handleDelete(user.id)}
-                            disabled={deleteUser.isLoading}
+                            disabled={deleteUser.isPending}
                           >
-                            <FaTrash />
+                            {deleteUser.isPending ? (
+                              <span className="spinner-border spinner-border-sm" />
+                            ) : (
+                              <FaTrash />
+                            )}
                           </button>
                         </div>
                       </td>
