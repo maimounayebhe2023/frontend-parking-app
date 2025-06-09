@@ -11,10 +11,12 @@ import {
   FaHome,
   FaUsers,
 } from "react-icons/fa";
+import { useAuth } from "../hooks/useAuth";
 
 const Sidebar = ({ onLogout }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
+  const { user } = useAuth();
 
   // Effet pour gérer la fermeture automatique du sidebar sur les petits écrans
   useEffect(() => {
@@ -68,12 +70,15 @@ const Sidebar = ({ onLogout }) => {
       label: "Recherche",
       tooltip: "Rechercher un véhicule",
     },
-    {
-      path: "/dashboard/utilisateurs",
-      icon: <FaUsers />,
-      label: "Utilisateurs",
-      tooltip: "Gérer les utilisateurs",
-    },
+    // Menu Utilisateurs visible uniquement pour les administrateurs
+    ...(user?.role === "admin" ? [
+      {
+        path: "/dashboard/utilisateurs",
+        icon: <FaUsers />,
+        label: "Utilisateurs",
+        tooltip: "Gérer les utilisateurs",
+      }
+    ] : []),
   ];
 
   const isActive = (path) => location.pathname === path;
