@@ -39,7 +39,7 @@ const EnregistrementsList = () => {
       return (
         item.plaque_engin?.toLowerCase().includes(termeRecherche) ||
         item.code_pin?.toLowerCase().includes(termeRecherche) ||
-        item.telephone_conducteur?.toLowerCase().includes(termeRecherche) ||
+        item.tel?.toLowerCase().includes(termeRecherche) ||
         item.typeengin?.toLowerCase().includes(termeRecherche) ||
         new Date(item.date_enregistrement)
           .toLocaleString()
