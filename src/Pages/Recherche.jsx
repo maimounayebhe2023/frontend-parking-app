@@ -91,7 +91,7 @@ const CodePinSearch = () => {
                 Rechercher
                 <span className="text-muted">
                   {" "}
-                  (nom, plaque, téléphone, code PIN ou date)
+                  (plaque, téléphone, code PIN)
                 </span>
               </label>
               <input

@@ -15,7 +15,7 @@ const utilisateurService = {
 
   // Modifier un utilisateur existant
   modifier: async ({ id, ...userData }) => {
-    const response = await api.put(`/utilisateurs/${id}`, userData);
+    const response = await api.patch(`/utilisateurs/${id}`, userData);
     return response.data;
   },
 
