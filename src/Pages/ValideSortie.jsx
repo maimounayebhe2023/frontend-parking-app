@@ -47,7 +47,7 @@ const SortieForm = () => {
       <div className="sortie-dashboard-card">
         <div className="sortie-form-container">
           <div className="sortie-form-header">
-            <h2 className="sortie-form-title">Validation de Sortie</h2>
+            <h2 className="sortie-form-title">Autoriser une récuperation</h2>
             <FaSignOutAlt className="sortie-form-title-icon" />
           </div>
 
@@ -90,7 +90,7 @@ const SortieForm = () => {
                 ) : (
                   <>
                     <FaSignOutAlt className="me-2" />
-                    Valider la sortie
+                    Auotirser la récupération
                   </>
                 )}
               </button>

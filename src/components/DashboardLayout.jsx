@@ -14,8 +14,7 @@ import {
 } from "react-icons/fa";
 
 const DashboardLayout = ({ children }) => {
-  const { logout } = useAuth();
-
+  const { logout, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
 
@@ -65,12 +64,16 @@ const DashboardLayout = ({ children }) => {
       label: "Historique",
       tooltip: "Consulter l'historique des entrées/sorties",
     },
-    {
-      path: "/dashboard/recherche",
-      icon: <FaSearch />,
-      label: "Recherche",
-      tooltip: "Rechercher un véhicule",
-    },
+    ...(user?.role === "admin"
+      ? [
+          {
+            path: "/dashboard/utilisateurs",
+            icon: <FaUsers />,
+            label: "Utilisateurs",
+            tooltip: "Gérer les utilisateurs",
+          },
+        ]
+      : []),
   ];
 
   const isActive = (path) => location.pathname === path;

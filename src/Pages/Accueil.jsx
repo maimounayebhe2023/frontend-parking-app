@@ -32,38 +32,38 @@ const Accueil = () => {
 
   const quickActions = [
     {
-      title: "Nouvelle Entrée",
-      description: "Enregistrer un nouveau véhicule",
+      title: "Nouvel Enregistrement",
+      description: "Effectuer un nouveau enregitrement",
       icon: <FaSignInAlt />,
-      path: "/nouvelle-entree",
+      path: "/dashboard/nouvelle-entree",
       color: "#3498db",
     },
     {
-      title: "Validation Sortie",
-      description: "Valider la sortie d'un véhicule",
+      title: "Autoriser une récupération",
+      description: "Autoriser une récupératione",
       icon: <FaSignOutAlt />,
-      path: "/validation-sortie",
+      path: "/dashboard/validation-sortie",
       color: "#2ecc71",
     },
     {
       title: "Liste Actuelle",
-      description: "Voir les véhicules en stationnement",
+      description: "Voir les engins en stationnement",
       icon: <FaList />,
-      path: "/liste-actuelle",
+      path: "/dashboard/liste-actuelle",
       color: "#e74c3c",
     },
     {
       title: "Historique",
       description: "Consulter l'historique complet",
       icon: <FaHistory />,
-      path: "/historique",
+      path: "/dashboard/historique",
       color: "#9b59b6",
     },
     {
       title: "Recherche",
-      description: "Rechercher un véhicule",
+      description: "Rechercher un engin",
       icon: <FaSearch />,
-      path: "/recherche",
+      path: "/dashboard/recherche",
       color: "#f1c40f",
     },
   ];
@@ -71,8 +71,8 @@ const Accueil = () => {
   return (
     <div className="dashboard-content">
       <section className="welcome-section">
-        <h1>Bienvenue au Parking UNC</h1>
-        <p>Gérez efficacement votre stationnement</p>
+        <h1>Bienvenue à UNCPARK</h1>
+        <p>Gérez efficacement les stationnements</p>
       </section>
 
       <section className="stats-grid">
@@ -95,28 +95,23 @@ const Accueil = () => {
           <>
             <StatCard
               icon={FaParking}
-              title="Total Véhicules"
+              title="Total Engins"
               value={stats?.total}
               className="total"
             />
             <StatCard
               icon={FaCar}
-              title="Véhicules Actifs"
+              title="Engins Actifs"
               value={stats?.active}
               className="active"
             />
             <StatCard
               icon={FaMotorcycle}
-              title="Véhicules Sortis"
-              value={stats?.exited}
+              title="Engins Récuperés"
+              value={stats?.Sorti}
               className="exited"
             />
-            <StatCard
-              icon={FaParking}
-              title="Taux d'Occupation"
-              value={stats?.occupation ? `${stats.occupation}%` : null}
-              className="occupation"
-            />
+         
           </>
         )}
       </section>

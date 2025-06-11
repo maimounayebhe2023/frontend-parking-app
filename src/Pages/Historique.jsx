@@ -217,29 +217,20 @@ function EnregistrementsParDate() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Date Enregistrement</th>
-                    <th>Date Sortie</th>
                     <th>Nom</th>
                     <th>Prénom</th>
+                    <th>Type d'engin</th>
                     <th>N° Plaque</th>
-                    <th>Type Engin</th>
+                    <th>Date d'enregistrement</th>
+                    <th>Date de sortie</th>
                   </tr>
                 </thead>
                 <tbody>
                   {enregistrementsFiltres.length > 0 ? (
                     enregistrementsFiltres.map((item) => (
                       <tr key={item.id}>
-                        <td>
-                          {new Date(item.date_enregistrement).toLocaleString()}
-                        </td>
-                        <td>
-                          {item.date_sortie
-                            ? new Date(item.date_sortie).toLocaleString()
-                            : "-"}
-                        </td>
                         <td>{item.nom_conducteur}</td>
                         <td>{item.prenom_conducteur}</td>
-                        <td>{item.plaque_engin || "-"}</td>
                         <td>
                           <span
                             className={`badge ${
@@ -251,7 +242,17 @@ function EnregistrementsParDate() {
                             {item.typeengin || "-"}
                           </span>
                         </td>
-                      </tr>
+                        <td>{item.plaque_engin || "-"}</td>
+                        <td>
+                          {new Date(item.date_enregistrement).toLocaleString()}
+                        </td>
+                        <td>
+                          {item.date_sortie
+                            ? new Date(item.date_sortie).toLocaleString()
+                            : "-"
+                          }
+                      </td>
+                     </tr>
                     ))
                   ) : (
                     <tr>

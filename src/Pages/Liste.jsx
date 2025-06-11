@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaDatabase,
@@ -7,6 +7,7 @@ import {
   FaFileCsv,
   FaEye,
   FaTrash,
+  FaSearch,
 } from "react-icons/fa";
 import { useEnregistrementsList } from "../hooks/useEnregistrements";
 import { useExportEnregistrements } from "../hooks/useExport";
@@ -14,10 +15,11 @@ import "../Style/common.css";
 import "../Style/Liste.css";
 
 const EnregistrementsList = () => {
+  const navigate = useNavigate();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [exportMenuRef] = useState(React.createRef());
   const [exportMessage, setExportMessage] = useState("");
-  const navigate = useNavigate();
+  const [recherche, setRecherche] = useState("");
 
   const {
     data: enregistrements = [],
@@ -27,6 +29,25 @@ const EnregistrementsList = () => {
   } = useEnregistrementsList();
   const { exportEnregistrements, isExporting, exportError } =
     useExportEnregistrements();
+
+  // Filtrage des données en fonction de la recherche
+  const donneesFiltrees = useMemo(() => {
+    if (!recherche.trim()) return enregistrements;
+
+    const termeRecherche = recherche.toLowerCase().trim();
+    return enregistrements.filter((item) => {
+      return (
+        item.plaque_engin?.toLowerCase().includes(termeRecherche) ||
+        item.code_pin?.toLowerCase().includes(termeRecherche) ||
+        item.tel?.toLowerCase().includes(termeRecherche) ||
+        item.typeengin?.toLowerCase().includes(termeRecherche) ||
+        new Date(item.date_enregistrement)
+          .toLocaleString()
+          .toLowerCase()
+          .includes(termeRecherche)
+      );
+    });
+  }, [enregistrements, recherche]);
 
   // Gestion du clic en dehors du menu d'export
   useEffect(() => {
@@ -44,7 +65,7 @@ const EnregistrementsList = () => {
   }, []);
 
   const handleExportClick = () => {
-    if (enregistrements.length === 0) {
+    if (donneesFiltrees.length === 0) {
       setExportMessage("Aucune donnée à exporter");
       setTimeout(() => setExportMessage(""), 3000);
       return;
@@ -55,9 +76,9 @@ const EnregistrementsList = () => {
   const handleExport = async (format) => {
     try {
       if (format === "excel") {
-        await exportEnregistrements(enregistrements);
+        await exportEnregistrements(donneesFiltrees);
       } else if (format === "csv") {
-        await exportEnregistrements(enregistrements, "csv");
+        await exportEnregistrements(donneesFiltrees, "csv");
       }
       setShowExportMenu(false);
     } catch (error) {
@@ -99,18 +120,56 @@ const EnregistrementsList = () => {
 
   return (
     <div className="dashboard-content">
+      {/* Carte de recherche */}
+      <div className="dashboard-card mb-4">
+        <div className="filter-container">
+          <div className="filter-header">
+            <div className="filter-title-container">
+              <h2 className="filter-title">Recherche</h2>
+              <FaSearch className="filter-title-icon" />
+            </div>
+          </div>
+
+          <form
+            className="filter-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <div className="filter-group">
+              <label htmlFor="recherche">
+                Rechercher
+                <span className="text-muted">
+                  {" "}
+                  (plaque, code PIN, n° téléphone)
+                </span>
+              </label>
+              <input
+                id="recherche"
+                type="text"
+                value={recherche}
+                onChange={(e) => setRecherche(e.target.value)}
+                placeholder="Entrez votre recherche..."
+                disabled={isLoading}
+                className="form-control"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+
       {/* Carte principale */}
       <div className="dashboard-card">
         <div className="results-container">
           <div className="results-header">
             <div className="d-flex align-items-center gap-3">
               <h3 className="results-title">Liste des Enregistrements</h3>
-              {enregistrements.length > 0 && (
+              {donneesFiltrees.length > 0 && (
                 <span className="results-count">
                   <FaDatabase />
                   <span>
-                    {enregistrements.length} enregistrement
-                    {enregistrements.length > 1 ? "s" : ""}
+                    {donneesFiltrees.length} enregistrement
+                    {donneesFiltrees.length > 1 ? "s" : ""}
                   </span>
                 </span>
               )}
@@ -171,7 +230,7 @@ const EnregistrementsList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {enregistrements.map((item, index) => (
+                  {donneesFiltrees.map((item, index) => (
                     <tr key={index}>
                       <td>{item.plaque_engin || "—"}</td>
                       <td>
@@ -203,7 +262,7 @@ const EnregistrementsList = () => {
                             item.date_sortie ? "bg-success" : "bg-danger"
                           }`}
                         >
-                          {item.date_sortie ? "Sorti" : "Non sorti"}
+                          {item.date_sortie ? "récuperé" : "Non récuperé"}
                         </span>
                       </td>
                       <td>
@@ -228,7 +287,7 @@ const EnregistrementsList = () => {
                       </td>
                     </tr>
                   ))}
-                  {!isLoading && enregistrements.length === 0 && (
+                  {!isLoading && donneesFiltrees.length === 0 && (
                     <tr>
                       <td colSpan="6" className="text-center py-4">
                         Aucun enregistrement trouvé
