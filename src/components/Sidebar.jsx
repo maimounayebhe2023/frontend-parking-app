@@ -21,7 +21,7 @@ const Sidebar = ({ onLogout }) => {
   // Effet pour gérer la fermeture automatique du sidebar sur les petits écrans
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 868) {
         setSidebarOpen(false);
       } else {
         setSidebarOpen(true);

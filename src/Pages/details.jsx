@@ -10,7 +10,7 @@ function AfficherEnregistrement() {
   const rechercher = () => {
     if (!codePin.trim()) return;
 
-    axios.get(`http://127.0.0.1:8000/api/show/${codePin}`)
+    axios.get(`http://127.0.0.1:8000/api/Affiche/${id}`)
       .then((res) => {
         setDonnees(res.data);
         setErreur('');
