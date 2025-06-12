@@ -11,6 +11,7 @@ import {
   FaBars,
   FaTimes,
   FaHome,
+  FaUsers,
 } from "react-icons/fa";
 
 const DashboardLayout = ({ children }) => {
@@ -43,26 +44,26 @@ const DashboardLayout = ({ children }) => {
     {
       path: "/dashboard/nouvelle-entree",
       icon: <FaSignInAlt />,
-      label: "Nouvelle Entrée",
-      tooltip: "Enregistrer une nouvelle entrée",
+      label: "Enregistrement",
+      tooltip: "Effectuer un nouveau enregistrement",
     },
     {
       path: "/dashboard/validation-sortie",
       icon: <FaSignOutAlt />,
-      label: "Validation Sortie",
-      tooltip: "Valider une sortie de véhicule",
+      label: "Recuperation",
+      tooltip: "Autoriser une recuperation",
     },
     {
       path: "/dashboard/liste-actuelle",
       icon: <FaList />,
-      label: "Liste Actuelle",
-      tooltip: "Voir les véhicules en stationnement",
+      label: "Liste",
+      tooltip: "Voir les engins en stationnement",
     },
     {
       path: "/dashboard/historique",
       icon: <FaHistory />,
       label: "Historique",
-      tooltip: "Consulter l'historique des entrées/sorties",
+      tooltip: "Consulter l'historique des stationnements",
     },
     ...(user?.role === "admin"
       ? [

@@ -12,6 +12,8 @@ import { useExportEnregistrements } from "../hooks/useExport";
 import "../Style/Historique.css";
 
 function EnregistrementsParDate() {
+  const [dateDebutForm, setDateDebutForm] = useState("");
+  const [dateFinForm, setDateFinForm] = useState("");
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -131,6 +133,8 @@ function EnregistrementsParDate() {
             className="filter-form"
             onSubmit={(e) => {
               e.preventDefault();
+              setDateDebut(dateDebutForm);
+              setDateFin(dateFinForm);
             }}
           >
             <div className="filter-group">
@@ -141,11 +145,11 @@ function EnregistrementsParDate() {
               <input
                 id="dateDebut"
                 type="date"
-                value={dateDebut}
-                onChange={(e) => setDateDebut(e.target.value)}
+                value={dateDebutForm}
+                onChange={(e) => setDateDebutForm(e.target.value)}
                 disabled={isLoading}
                 required
-                max={dateFin || undefined}
+                max={dateFinForm || undefined}
               />
             </div>
 
@@ -157,11 +161,11 @@ function EnregistrementsParDate() {
               <input
                 id="dateFin"
                 type="date"
-                value={dateFin}
-                onChange={(e) => setDateFin(e.target.value)}
+                value={dateFinForm}
+                onChange={(e) => setDateFinForm(e.target.value)}
                 disabled={isLoading}
                 required
-                min={dateDebut || undefined}
+                min={dateDebutForm || undefined}
               />
             </div>
 
@@ -169,7 +173,7 @@ function EnregistrementsParDate() {
               <button
                 type="submit"
                 className="search-btn"
-                disabled={isLoading || !dateDebut || !dateFin}
+                disabled={isLoading || !dateDebutForm || !dateFinForm}
               >
                 <FaSearch />
                 {isLoading ? "Chargement..." : "Rechercher"}

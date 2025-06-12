@@ -19,10 +19,12 @@ const AfficherEnregistrement = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const {
-    data: enregistrement,
+    data,
     isLoading,
     error,
   } = useEnregistrementDetails(id);
+
+  const enregistrement = data?.enregistrement;
 
   const handleBack = () => {
     navigate(-1);

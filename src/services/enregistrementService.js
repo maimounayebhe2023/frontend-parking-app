@@ -33,6 +33,7 @@ const enregistrementService = {
     const response = await api.get(`/Affiche/${id}`);
     return response.data;
   },
+  
 
   /**
    * Exporte les enregistrements au format Excel côté client

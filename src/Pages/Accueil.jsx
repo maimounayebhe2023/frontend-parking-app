@@ -59,13 +59,13 @@ const Accueil = () => {
       path: "/dashboard/historique",
       color: "#9b59b6",
     },
-    {
+    /*{
       title: "Recherche",
       description: "Rechercher un engin",
       icon: <FaSearch />,
       path: "/dashboard/recherche",
       color: "#f1c40f",
-    },
+    },*/
   ];
 
   return (
