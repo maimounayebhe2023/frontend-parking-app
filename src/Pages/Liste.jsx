@@ -174,26 +174,6 @@ const EnregistrementsList = () => {
                 </span>
               )}
             </div>
-            <div className="export-dropdown" ref={exportMenuRef}>
-              <button
-                className="export-btn"
-                onClick={handleExportClick}
-                disabled={isLoading || isExporting}
-              >
-                <FaFileDownload />
-                {isExporting ? "Exportation..." : "Exporter"}
-              </button>
-              {showExportMenu && (
-                <div className="export-menu">
-                  <button onClick={() => handleExport("excel")}>
-                    <FaFileExcel /> Excel
-                  </button>
-                  <button onClick={() => handleExport("csv")}>
-                    <FaFileCsv /> CSV
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
 
           {(exportMessage || error || exportError) && (

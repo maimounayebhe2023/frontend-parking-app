@@ -32,21 +32,21 @@ const Accueil = () => {
 
   const quickActions = [
     {
-      title: "Nouvel Enregistrement",
+      title: "Enregistrement",
       description: "Effectuer un nouveau enregitrement",
       icon: <FaSignInAlt />,
       path: "/dashboard/nouvelle-entree",
       color: "#3498db",
     },
     {
-      title: "Autoriser une récupération",
+      title: "Récupération",
       description: "Autoriser une récupératione",
       icon: <FaSignOutAlt />,
       path: "/dashboard/validation-sortie",
       color: "#2ecc71",
     },
     {
-      title: "Liste Actuelle",
+      title: "Liste ",
       description: "Voir les engins en stationnement",
       icon: <FaList />,
       path: "/dashboard/liste-actuelle",
