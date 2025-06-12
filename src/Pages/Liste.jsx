@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaDatabase,
   FaFileDownload,
@@ -8,7 +9,6 @@ import {
   FaTrash,
   FaSearch,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { useEnregistrementsList } from "../hooks/useEnregistrements";
 import { useExportEnregistrements } from "../hooks/useExport";
 import "../Style/common.css";
@@ -112,6 +112,10 @@ const EnregistrementsList = () => {
       setExportMessage("Erreur lors de la suppression");
       setTimeout(() => setExportMessage(""), 3000);
     }
+  };
+
+  const handleViewDetails = (id) => {
+    navigate(`/dashboard/details/${id}`);
   };
 
   return (
@@ -266,7 +270,8 @@ const EnregistrementsList = () => {
                           <button
                             className="btn btn-sm btn-outline-primary"
                             title="Voir détails"
-                            onClick={() => navigate(`/dashboard/details/${item.id}`)}
+                            disabled={isLoading}
+                            onClick={() => handleViewDetails(item.id)}
                           >
                             <FaEye />
                           </button>
