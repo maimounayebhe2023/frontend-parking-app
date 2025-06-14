@@ -5,7 +5,12 @@ import enregistrementService from "../services/enregistrementService";
 export const useEnregistrementsList = (filters = {}) => {
   return useQuery({
     queryKey: ["enregistrements", filters],
-    queryFn: () => enregistrementService.getListe(filters),
+    queryFn: () => {
+      if (filters.date_debut && filters.date_fin) {
+        return enregistrementService.getListeByDate(filters.date_debut, filters.date_fin);
+      }
+      return enregistrementService.getListe(filters);
+    },
     staleTime: 30 * 1000, // Les données sont considérées comme fraîches pendant 30 secondes
   });
 };

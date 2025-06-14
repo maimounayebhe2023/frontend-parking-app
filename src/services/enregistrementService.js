@@ -22,6 +22,17 @@ const enregistrementService = {
     return response.data;
   },
 
+  // Obtenir la liste des enregistrements par plage de date
+  getListeByDate: async (dateDebut, dateFin) => {
+    const response = await api.get("/enregistrement", {
+      params: {
+        date_debut: dateDebut,
+        date_fin: dateFin
+      }
+    });
+    return response.data;
+  },
+
   // Obtenir les statistiques
   getStatistiques: async () => {
     const response = await api.get("/statistiques");
@@ -43,15 +54,16 @@ const enregistrementService = {
   exportToExcel: async (enregistrements) => {
     // Préparer les données pour l'export
     const dataToExport = enregistrements.map((item) => ({
-      Plaque: item.plaque_immatricu,
-      "Type d'engin": item.type_engin,
+      "Code PIN": item.code_pin,
+      "Plaque": item.plaque_engin,
+      "Type d'engin": item.typeengin,
       "Date d'entrée": new Date(item.date_enregistrement).toLocaleString(),
-      "Date de sortie": new Date(item.date_sortie).toLocaleString(),
-      Durée: this.calculateDuration(item.date_enregistrement, item.date_sortie),
-      Catégorie: item.categorie_nom,
-      Nom: item.nom_conducteur,
-      Prénom: item.prenom_conducteur,
-      Téléphone: item.tel,
+      "Date de sortie": item.date_sortie ? new Date(item.date_sortie).toLocaleString() : "En stationnement",
+      "Nom": item.nom_conducteur,
+      "Prénom": item.prenom_conducteur,
+      "Téléphone": item.tel,
+      "Catégorie": item.categorie_nom,
+      "Statut": item.date_sortie ? "Sorti" : "Non sorti"
     }));
 
     // Créer un nouveau classeur
@@ -67,7 +79,7 @@ const enregistrementService = {
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
 
     // Télécharger le fichier
-    const fileName = this.generateFileName();
+    const fileName = `historique_${new Date().toISOString().split('T')[0]}.xlsx`;
     saveAs(blob, fileName);
   },
 
