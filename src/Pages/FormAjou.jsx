@@ -3,6 +3,7 @@ import { FaUser, FaPhone, FaCar, FaIdCard, FaSave } from "react-icons/fa";
 import { useAddEnregistrement } from "../hooks/useEnregistrements";
 import "../Style/common.css";
 import "../Style/FormAjou.css";
+import { useNavigate } from "react-router-dom";
 
 const AjoutForm = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ const AjoutForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const addEnregistrement = useAddEnregistrement();
+  const navigate = useNavigate();
 
   const validate = () => {
     const newErrors = {};
@@ -73,17 +75,11 @@ const AjoutForm = () => {
     setErrorMessage("");
 
     try {
-      await addEnregistrement.mutateAsync(formData);
+      const response = await addEnregistrement.mutateAsync(formData);
       setSuccessMessage("Enregistrement ajouté avec succès");
-      setFormData({
-        nom: "",
-        prenom: "",
-        tel: "",
-        categorie_nom: "personnel",
-        plaque_immatricu: "",
-        type_engin: "Voiture",
-      });
-      setErrors({});
+      setTimeout(() => {
+        navigate(`/dashboard/details/${response.enregistrement.id}`);
+      }, 1000);
     } catch (error) {
       setErrorMessage(
         error.message || "Erreur lors de l'ajout de l'enregistrement"

@@ -99,32 +99,21 @@ const ModifierEnregistrement = () => {
                       formData.categorie_id === "3" ? "Proffesseur" : "Autres"
       };
 
-      console.log("Données du formulaire:", formData);
-      console.log("Données à envoyer:", dataToSend);
-      
       const response = await modifierEnregistrement.mutateAsync({ 
         id, 
         data: dataToSend 
       });
 
-      console.log("Réponse du serveur:", response);
-
       if (response.message === "Mise à jour effectuée avec succès") {
         setSuccessMessage("Enregistrement modifié avec succès");
         setTimeout(() => {
-          navigate("/dashboard/historique");
-        }, 2000);
+          navigate(`/dashboard/details/${id}`);
+        }, 1000);
       } else {
         setErrorMessage("Erreur inattendue lors de la modification");
       }
     } catch (error) {
       console.error("Erreur complète:", error);
-      console.error("Détails de l'erreur:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers,
-        config: error.config
-      });
       setErrorMessage(
         error.response?.data?.message || "Erreur lors de la modification de l'enregistrement"
       );
