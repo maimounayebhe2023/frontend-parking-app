@@ -6,6 +6,7 @@ import {
   FaFileExcel,
   FaFileCsv,
   FaEye,
+  FaEdit,
   FaTrash,
   FaSearch,
 } from "react-icons/fa";
@@ -87,35 +88,12 @@ const EnregistrementsList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (
-      !window.confirm("Êtes-vous sûr de vouloir supprimer cet enregistrement ?")
-    ) {
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `http://localhost:8000/api/enregistrements/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la suppression");
-      }
-
-      await refetch();
-    } catch (err) {
-      console.error("Erreur:", err);
-      setExportMessage("Erreur lors de la suppression");
-      setTimeout(() => setExportMessage(""), 3000);
-    }
-  };
-
   const handleViewDetails = (id) => {
     navigate(`/dashboard/details/${id}`);
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/dashboard/modifier/${id}`);
   };
 
   return (
@@ -256,12 +234,12 @@ const EnregistrementsList = () => {
                             <FaEye />
                           </button>
                           <button
-                            className="btn btn-sm btn-outline-danger"
-                            title="Supprimer"
-                            onClick={() => handleDelete(item.id)}
+                            className="btn btn-sm btn-outline-warning"
+                            title="Modifier"
+                            onClick={() => handleEdit(item.id)}
                             disabled={isLoading}
                           >
-                            <FaTrash />
+                            <FaEdit />
                           </button>
                         </div>
                       </td>

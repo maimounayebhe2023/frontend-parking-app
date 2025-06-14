@@ -53,11 +53,27 @@ export const useEnregistrementsStats = () => {
     staleTime: 60 * 1000, 
   });
 };
-//Pour avoir les details d'un enregistrement
+
+// Pour avoir les details d'un enregistrement
 export const useEnregistrementDetails = (id) => {
   return useQuery({
     queryKey: ["enregistrement", id],
     queryFn: () => enregistrementService.getDetails(id),
     enabled: !!id,
+  });
+};
+
+// Hook pour modifier un enregistrement
+export const useModifierEnregistrement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }) => enregistrementService.modifier(id, data),
+    onSuccess: () => {
+      // Invalider et recharger la liste des enregistrements
+      queryClient.invalidateQueries({ queryKey: ["enregistrements"] });
+      // Invalider et recharger les statistiques
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+    },
   });
 };

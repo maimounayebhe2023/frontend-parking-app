@@ -44,7 +44,12 @@ const enregistrementService = {
     const response = await api.get(`/Affiche/${id}`);
     return response.data;
   },
-  
+
+  // Modifier un enregistrement
+  modifier: async (id, data) => {
+    const response = await api.patch(`/modifier/${id}`, data);
+    return response.data;
+  },
 
   /**
    * Exporte les enregistrements au format Excel côté client

@@ -18,6 +18,7 @@ import { Navigate } from "react-router-dom";
 import ListeUtilisateurs from "./Pages/ListeUtilisateurs";
 import FormUtilisateur from "./Pages/FormUtilisateur";
 import ModifierUtilisateur from "./Pages/ModifierUtilisateur";
+import ModifierEnregistrement from "./Pages/ModifierEnregistrement";
 
 import "./App.css";
 import "./Style/Dashboard.css";
@@ -41,6 +42,7 @@ const ProtectedLayout = () => {
           <Route path="utilisateurs" element={<ListeUtilisateurs />} />
           <Route path="utilisateurs/nouveau" element={<FormUtilisateur />} />
           <Route path="utilisateurs/:id" element={<ModifierUtilisateur />} />
+          <Route path="modifier/:id" element={<ModifierEnregistrement />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </DashboardLayout>
