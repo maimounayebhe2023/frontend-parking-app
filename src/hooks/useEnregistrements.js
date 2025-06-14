@@ -45,10 +45,10 @@ export const useEnregistrementsStats = () => {
   return useQuery({
     queryKey: ["enregistrements-stats"],
     queryFn: enregistrementService.getStatistiques,
-    staleTime: 60 * 1000, // Les données sont considérées comme fraîches pendant 1 minute
+    staleTime: 60 * 1000, 
   });
 };
-
+//Pour avoir les details d'un enregistrement
 export const useEnregistrementDetails = (id) => {
   return useQuery({
     queryKey: ["enregistrement", id],

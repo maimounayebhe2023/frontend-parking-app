@@ -156,7 +156,7 @@ const AfficherEnregistrement = () => {
 
             <div className="details-section">
               <h3 className="section-title">
-                <FaUser className="section-icon" /> Informations du conducteur
+                <FaUser className="section-icon" /> Informations de la Personne
               </h3>
               <div className="details-grid">
                 <div className="detail-item">
@@ -184,7 +184,7 @@ const AfficherEnregistrement = () => {
 
             <div className="details-section">
               <h3 className="section-title">
-                <FaCar className="section-icon" /> Informations du véhicule
+                <FaCar className="section-icon" /> Informations de l'Engin
               </h3>
               <div className="details-grid">
                 <div className="detail-item">
