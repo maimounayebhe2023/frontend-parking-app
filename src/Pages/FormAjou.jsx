@@ -193,8 +193,7 @@ const AjoutForm = () => {
                 >
                   <option value="personnel">Personnel</option>
                   <option value="etudiant">Étudiant</option>
-                  <option value="enseignant">Enseignant</option>
-                  <option value="parent">Parent</option>
+                  <option value="enseignant">Proffesseur</option>
                   <option value="autres">Autres</option>
                 </select>
                 {errors.categorie_nom && (
