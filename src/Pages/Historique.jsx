@@ -6,10 +6,12 @@ import {
   FaDatabase,
   FaFileDownload,
   FaFileCsv,
+  FaEye,
 } from "react-icons/fa";
 import { useEnregistrementsList } from "../hooks/useEnregistrements";
 import { useExportEnregistrements } from "../hooks/useExport";
 import "../Style/Historique.css";
+import { useNavigate } from "react-router-dom";
 
 function EnregistrementsParDate() {
   const [dateDebutForm, setDateDebutForm] = useState("");
@@ -19,6 +21,7 @@ function EnregistrementsParDate() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [exportMenuRef] = useState(React.createRef());
   const [exportMessage, setExportMessage] = useState("");
+  const navigate = useNavigate();
 
   const {
     data: enregistrements = [],
@@ -226,7 +229,7 @@ function EnregistrementsParDate() {
                     <th>Type d'engin</th>
                     <th>N° Plaque</th>
                     <th>Date d'enregistrement</th>
-                    <th>Date de sortie</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -251,12 +254,17 @@ function EnregistrementsParDate() {
                           {new Date(item.date_enregistrement).toLocaleString()}
                         </td>
                         <td>
-                          {item.date_sortie
-                            ? new Date(item.date_sortie).toLocaleString()
-                            : "-"
-                          }
-                      </td>
-                     </tr>
+                          <div className="action-buttons">
+                            <button
+                              className="btn btn-sm btn-outline-primary"
+                              title="Voir détails"
+                              onClick={() => navigate(`/dashboard/details/${item.id}`)}
+                            >
+                              <FaEye />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
                     ))
                   ) : (
                     <tr>
