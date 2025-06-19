@@ -87,7 +87,7 @@ const Sidebar = ({ onLogout }) => {
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
       <div className="sidebar-header">
-        <img src="/parking-icon.svg" alt="Parking UNC" className="logo-icon" />
+        <img src="/parking-icon.svg" alt="UNCPARK" className="logo-icon" />
         <h2>UNCPARK</h2>
         <button
           className="toggle-btn"

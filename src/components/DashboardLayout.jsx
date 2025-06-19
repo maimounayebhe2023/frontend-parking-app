@@ -85,10 +85,10 @@ const DashboardLayout = ({ children }) => {
         <div className="sidebar-header">
           <img
             src="/parking-icon.svg"
-            alt="Parking UNC"
+            alt="UNCPARK"
             className="logo-icon"
           />
-          <h2>Parking UNC</h2>
+          <h2>UNCPARK</h2>
           <button
             className="toggle-btn"
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -140,7 +140,7 @@ const DashboardLayout = ({ children }) => {
             </div>
             <div className="header-actions">
               <span className="current-time">
-                {new Date().toLocaleTimeString()}
+                {new Date().toLocaleTimeString("fr-FR", { timeZone: "Africa/Abidjan" })}
               </span>
             </div>
           </div>

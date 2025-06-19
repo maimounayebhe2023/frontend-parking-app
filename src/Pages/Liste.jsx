@@ -183,7 +183,6 @@ const EnregistrementsList = () => {
                     <th>Type d'engin</th>
                     <th>Date d'enregistrement</th>
                     <th>Date de sortie</th>
-                    <th>Statut</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -213,15 +212,6 @@ const EnregistrementsList = () => {
                             En stationnement
                           </span>
                         )}
-                      </td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            item.date_sortie ? "bg-success" : "bg-danger"
-                          }`}
-                        >
-                          {item.date_sortie ? "récuperé" : "Non récuperé"}
-                        </span>
                       </td>
                       <td>
                         <div className="action-buttons">
