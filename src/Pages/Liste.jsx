@@ -179,8 +179,7 @@ const EnregistrementsList = () => {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Plaque</th>
-                    <th>Type d'engin</th>
+                    <th>N° Plaque</th>
                     <th>Date d'enregistrement</th>
                     <th>Date de sortie</th>
                     <th>Actions</th>
@@ -190,20 +189,7 @@ const EnregistrementsList = () => {
                   {donneesFiltrees.map((item, index) => (
                     <tr key={index}>
                       <td>{item.plaque_engin || "—"}</td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            item.typeengin === "Voiture"
-                              ? "bg-primary"
-                              : "bg-info"
-                          }`}
-                        >
-                          {item.typeengin || "—"}
-                        </span>
-                      </td>
-                      <td>
-                        {new Date(item.date_enregistrement).toLocaleString()}
-                      </td>
+                      <td>{new Date(item.date_enregistrement).toLocaleString()}</td>
                       <td>
                         {item.date_sortie ? (
                           new Date(item.date_sortie).toLocaleString()
