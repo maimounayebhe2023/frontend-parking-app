@@ -90,7 +90,7 @@ const SortieForm = () => {
                 ) : (
                   <>
                     <FaSignOutAlt className="me-2" />
-                    Auotirser la récupération
+                    Autoriser la récupération
                   </>
                 )}
               </button>

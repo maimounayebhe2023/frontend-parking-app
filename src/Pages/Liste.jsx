@@ -103,7 +103,7 @@ const EnregistrementsList = () => {
         <div className="filter-container">
           <div className="filter-header">
             <div className="filter-title-container">
-              <h2 className="filter-title">Recherche</h2>
+              <h2 className="filter-title"></h2>
               <FaSearch className="filter-title-icon" />
             </div>
           </div>
@@ -115,11 +115,9 @@ const EnregistrementsList = () => {
             }}
           >
             <div className="filter-group">
-              <label htmlFor="recherche">
-                Rechercher
+              <label htmlFor=" ">
                 <span className="text-muted">
                   {" "}
-                  (plaque, code PIN, n° téléphone)
                 </span>
               </label>
               <input
@@ -127,7 +125,7 @@ const EnregistrementsList = () => {
                 type="text"
                 value={recherche}
                 onChange={(e) => setRecherche(e.target.value)}
-                placeholder="Entrez votre recherche..."
+                placeholder="Rechercher par  n° plaque, code PIN, n° téléphone..."
                 disabled={isLoading}
                 className="form-control"
               />
@@ -140,18 +138,16 @@ const EnregistrementsList = () => {
       <div className="dashboard-card">
         <div className="results-container">
           <div className="results-header">
-            <div className="d-flex align-items-center gap-3">
-              <h3 className="results-title">Liste des Enregistrements</h3>
-              {donneesFiltrees.length > 0 && (
-                <span className="results-count">
-                  <FaDatabase />
-                  <span>
-                    {donneesFiltrees.length} enregistrement
-                    {donneesFiltrees.length > 1 ? "s" : ""}
-                  </span>
+            <h3 className="results-title ">Liste des Enregistrements</h3>
+            {donneesFiltrees.length > 0 && (
+              <span className="results-count ">
+                <FaDatabase />
+                <span>
+                  {donneesFiltrees.length} enregistrement
+                  {donneesFiltrees.length > 1 ? "s" : ""}
                 </span>
-              )}
-            </div>
+              </span>
+            )}
           </div>
 
           {(exportMessage || error || exportError) && (
