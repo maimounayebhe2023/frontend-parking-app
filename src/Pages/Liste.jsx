@@ -179,6 +179,7 @@ const EnregistrementsList = () => {
               <table className="table">
                 <thead>
                   <tr>
+                    <th>Personne</th>
                     <th>N° Plaque</th>
                     <th>Date d'enregistrement</th>
                     <th>Date de sortie</th>
@@ -188,6 +189,7 @@ const EnregistrementsList = () => {
                 <tbody>
                   {donneesFiltrees.map((item, index) => (
                     <tr key={index}>
+                      <td>{item.prenom_conducteur}</td>
                       <td>{item.plaque_engin || "—"}</td>
                       <td>{new Date(item.date_enregistrement).toLocaleString()}</td>
                       <td>
