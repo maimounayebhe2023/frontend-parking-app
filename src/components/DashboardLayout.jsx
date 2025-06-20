@@ -22,7 +22,7 @@ const DashboardLayout = ({ children }) => {
   // Effet pour gérer la fermeture automatique du sidebar sur les petits écrans
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 1366) {
         setSidebarOpen(false);
       } else {
         setSidebarOpen(true);
